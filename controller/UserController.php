@@ -204,6 +204,7 @@ class UserController extends Controller
         // errors
         $passwordModifFailed = false;
         $imageEmpty = false;
+        $errorPngFile = false;
         
 
         if (array_key_exists("idUser", $_GET) && $database->userExist($_GET["idUser"]))
@@ -211,6 +212,7 @@ class UserController extends Controller
             $appartements = $database->getAppartementsByUserId($_GET["idUser"]);
             $userProfile = $database->getOneUserById($_GET["idUser"]);
             $view = file_get_contents('view/page/restrictedPages/userPage.php');
+            $size = "";
 
             if (array_key_exists("idUser", $_SESSION) && $_SESSION["idUser"] == $_GET["idUser"])
             {
@@ -224,42 +226,59 @@ class UserController extends Controller
 
                     if (array_key_exists("fileUpdate", $_POST)) // form just pour update l'image
                     {
+                        $errorPngFile = true;
+
                         if (!empty($_FILES["image"]["name"]) && $_FILES["image"]["name"] != "" && $this->extensionOk($_FILES["image"]["name"])) // vérifie qu'il y a bien un fichier de séléctionné // TODO : si le temps le permet : gérer fichier vide (!= "" ne fonctionne pas)
                         {
-                            if ($userProfile["useImage"] != "defaultUserPicture.png" && file_exists("resources/image/Users/" . $userProfile["useImage"]))
-                            {
-                                unlink("resources/image/Users/" . $userProfile["useImage"]); // suppression de l'ancienne image
-                            }
-
                             $image = "";
                             $imgName = date("YmdHis") . "_" . $_FILES["image"]["name"];
+                            
+                            $size = getimagesize($_FILES["image"]["tmp_name"]);
 
                             switch (pathinfo($imgName, PATHINFO_EXTENSION))
                             {
-                                case "PNG":
+                                case "PNG": // TODO : régler le problème avec les png !!!
                                 case "png":
-                                    $image = imagecreatefrompng($_FILES["image"]["tmp_name"]); // prépare la compression
+                                    if ($size[0] * $size[1] < PHP_INT_MAX) // gestion des png trop volumineux
+                                    {
+                                        $image = imageCreateFromPng($_FILES["image"]["tmp_name"]); // prépare la compression
+                                        $errorPngFile = false;
+                                    }
+                                    else
+                                    {
+                                        $errorPngFile = true;
+                                    }
                                     break;
             
                                 case "JPG":
                                 case "jpg":
                                     $image = imagecreatefromjpeg($_FILES["image"]["tmp_name"]); // prépare la compression
+                                    $errorPngFile = false;
                                     break;
                                 
                                 case "GIF":
                                 case "gif":
                                     $image = imagecreatefromgif($_FILES["image"]["tmp_name"]); // prépare la compression
+                                    $errorPngFile = false;
                                     break;
                                 default:
                                     break;
                             }
-            
-                            imagejpeg($image, "resources/image/Users/" . $imgName, 75); // compression de l'image 
+                            
+                            if (!$errorPngFile)
+                            {
+                                if ($userProfile["useImage"] != "defaultUserPicture.png" && file_exists("resources/image/Users/" . $userProfile["useImage"]))
+                                {
+                                    unlink("resources/image/Users/" . $userProfile["useImage"]); // suppression de l'ancienne image
+                                }
 
-                            //move_uploaded_file($_FILES["image"]["tmp_name"], "resources/image/Users/" . $imgName);
+                                imagejpeg($image, "resources/image/Users/" . $imgName, 75); // compression de l'image 
 
-                            $userProfile["useImage"] = $imgName;
-                            $user["useImage"] = $imgName;
+                                //move_uploaded_file($_FILES["image"]["tmp_name"], "resources/image/Users/" . $imgName);
+
+                                $userProfile["useImage"] = $imgName;
+                                $user["useImage"] = $imgName;
+                            }
                         }
                         else 
                         {
@@ -295,7 +314,7 @@ class UserController extends Controller
 
                     }
 
-                    if (!$passwordModifFailed && !$imageEmpty) // NOTE : (à vérifier à la fin du projet) ajouter les autre erreur ici afin que cela ne modifie pas la database s'il y a une erreur de form
+                    if (!$passwordModifFailed && !$imageEmpty && !$errorPngFile) // NOTE : (à vérifier à la fin du projet) ajouter les autre erreur ici afin que cela ne modifie pas la database s'il y a une erreur de form
                     {
                         $modificationDone = true;
                         $database->updateUser($user);

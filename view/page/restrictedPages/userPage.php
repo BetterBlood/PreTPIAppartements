@@ -14,7 +14,8 @@
 			}
             
             
-            var_dump($_FILES);
+            //var_dump($_FILES);
+            //var_dump($size);
 		?>
     </h2>
 
@@ -49,10 +50,13 @@
                         <input type="file" name="image" id="image" />
                         <input class="btn btn-primary mb-2" type="submit" value="Modifier" />
                         <?php
-                        if (isset($imageEmpty) && $imageEmpty)
+                        if ((isset($imageEmpty) && $imageEmpty) || $errorPngFile)
                         {
-                            echo 'l\'image séléctionnée n\'est pas valide';
+                            echo '<strong class="text-danger">l\'image séléctionnée n\'est pas valide, ou trop volumineuse.</strong>';
                         }
+                        var_dump(isset($imageEmpty));
+                        var_dump($imageEmpty);
+                        var_dump($errorPngFile);
                         ?>
                     </p>
                 </div>
