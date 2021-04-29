@@ -12,7 +12,9 @@
 			{
 				header("Location: index.php?controller=user&action=loginForm");
 			}
-			
+            
+            
+            var_dump($_FILES);
 		?>
     </h2>
 
