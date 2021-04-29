@@ -1,9 +1,5 @@
 
 
-
-
-
-
 <?php
     if (!array_key_exists("isConnected", $_SESSION) || !$_SESSION["isConnected"])
     {
@@ -12,7 +8,7 @@
 ?>
 
 <div class="text-white">
-    <h2>Page de modification de recette</h2>
+    <h2>Page de modification d'appartement</h2>
 
     <div class="bg-light">
         <?php
@@ -24,7 +20,7 @@
     </div>
 
     <?php
-        $imageAppartementLink = '"resources/image/Appartements/' . htmlspecialchars($appartement['recImage']) . '"';
+        $imageAppartementLink = '"resources/image/Appartements/' . htmlspecialchars($appartement['appImage']) . '"';
         echo '<img style="width:50%;" src=' . $imageAppartementLink . ' alt="image de profile">';
         
         echo '<form action="index.php?controller=appartement&action=editAppartement&id=' . $appartement["idAppartement"] . '" method="post" enctype="multipart/form-data">';
