@@ -558,6 +558,7 @@ class AppartementController extends Controller {
         $appartement = $database->getOneAppartement($_GET["id"]);
 
         $imageEmpty = false;
+        $formError = false;
 
         if (array_key_exists("fileUpdate", $_POST)) // modification de l'image
         {
@@ -588,8 +589,6 @@ class AppartementController extends Controller {
                         break;
                 }
 
-                
-
                 imagejpeg($image, "resources/image/Appartements/" . $imgName, 75); // compression de l'image
                 //move_uploaded_file($_FILES["image"]["tmp_name"], "resources/image/Appartements/" . $imgName);
                 $appartement["appImage"] = $imgName;
@@ -599,6 +598,83 @@ class AppartementController extends Controller {
             else
             {
                 $imageEmpty = true;
+            }
+        }
+
+        if (isset($_POST["appartementEdit"]))
+        {
+            $_SESSION["appartement"] = array();
+            $_SESSION["appartement"]["appName"] = "";
+            $_SESSION["appartement"]["appDescription"] = "";
+            $_SESSION["appartement"]["appCategory"] = "";
+            $_SESSION["appartement"]["appSurface"] = -1;
+            $_SESSION["appartement"]["appPrix"] = -1;
+            
+            if (array_key_exists("appName", $_POST) && trim($_POST["appName"]) != "" && strlen($_POST["appName"]) <= 100 && strlen($_POST["appName"]) > 1) // 2 charactère minimum
+            {
+                $_SESSION["appartement"]["appName"] = $_POST["appName"];
+            }
+            else
+            {
+                $formError = true;
+            }
+
+            if (array_key_exists("appCategory", $_POST) && trim($_POST["appCategory"]) != "" && strlen($_POST["appCategory"]) <= 100 && strlen($_POST["appCategory"]) > 4) // 5 charactère minimum
+            {
+                $_SESSION["appartement"]["appCategory"] = $_POST["appCategory"];
+            }
+            else
+            {
+                $formError = true;
+            }
+
+            if (array_key_exists("appSurface", $_POST) && trim($_POST["appSurface"]) != "" && (int)$_POST["appSurface"] >= 10) // TODO : Définir une surface minimum plausible
+            {
+                $_SESSION["appartement"]["appSurface"] = $_POST["appSurface"];
+            }
+            else
+            {
+                $formError = true;
+            }
+
+            if (array_key_exists("appPrix", $_POST) && trim($_POST["appPrix"]) != "" && (int)$_POST["appPrix"] >= 1 && (int)$_POST["appPrix"] >= 10) // TODO : Définir un prix minimum plausible
+            {
+                $_SESSION["appartement"]["appPrix"] = $_POST["appPrix"];
+            }
+            else
+            {
+                $formError = true;
+            }
+
+            if (array_key_exists("appDescription", $_POST) && trim($_POST["appDescription"]) != "" && strlen($_POST["appDescription"]) <= 255 && strlen($_POST["appDescription"]) > 4) // 5 charactère minimum
+            {
+                $_SESSION["appartement"]["appDescription"] = $_POST["appDescription"];
+            }
+            else
+            {
+                $formError = true;
+            }
+
+            if (!$formError)
+            {
+                $appartementTMP = array();
+
+                $appartementTMP["idAppartement"] = $appartement["idAppartement"];
+
+                $appartementTMP["idUser"] = $_SESSION["idUser"];
+                $appartementTMP["appName"] = $_SESSION["appartement"]["appName"];
+                $appartementTMP["appCategory"] = $_SESSION["appartement"]["appCategory"];
+                $appartementTMP["appSurface"] = (int)$_SESSION["appartement"]["appSurface"];
+                $appartementTMP["appPrix"] = (int)$_SESSION["appartement"]["appPrix"];
+                $appartementTMP["appDescription"] = $_SESSION["appartement"]["appDescription"];
+                
+                $appartementTMP["appDate"] = $appartement["appDate"];
+                $appartementTMP["appImage"] = $appartement["appImage"];
+                $appartementTMP["appRate"] = 0;
+
+                $database->editAppartement($appartementTMP); // modification de l'appartement dans la base de donnée
+
+                $appartement = $database->getOneAppartement($_GET["id"]);
             }
         }
 
