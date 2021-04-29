@@ -15,8 +15,9 @@
         $appartement["idUser"] = "";
     }
 
-    var_dump($appartement);
-    var_dump($_SESSION["appartement"])
+    // DEBUG
+    //var_dump($appartement);
+    //var_dump($_SESSION["appartement"])
 ?>
 
 <div class="text-white">

@@ -312,8 +312,8 @@ class UserController extends Controller
                         $user["useFirstname"] = $_POST["useFirstname"];
                         $user["useName"] = $_POST["useName"];
                         $user["useMail"] = $_POST["mail"];
-                        $user["useTelephone"] = $_POST["phone"]; 
-
+                        $user["usePhone"] = $_POST["phone"];
+                        $user["useProfilePref"] = $_POST["profilePref"];
                     }
 
                     if (!$passwordModifFailed && !$imageEmpty && !$errorPngFile) // NOTE : (à vérifier à la fin du projet) ajouter les autre erreur ici afin que cela ne modifie pas la database s'il y a une erreur de form

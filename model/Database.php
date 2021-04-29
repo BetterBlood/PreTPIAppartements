@@ -982,19 +982,24 @@ class Database {
                     'type' => PDO::PARAM_STR
                 ),
                 5 => array(
-                    'marker' => ':useTelephone',
-                    'input' => $user["useTelephone"],
+                    'marker' => ':usePhone',
+                    'input' => $user["usePhone"],
                     'type' => PDO::PARAM_STR
                 ),
                 6 => array(
                     'marker' => ':id',
                     'input' => $user["idUser"],
                     'type' => PDO::PARAM_INT
+                ),
+                7 => array(
+                    'marker' => ':useProfilePref',
+                    'input' => $user["useProfilePref"],
+                    'type' => PDO::PARAM_INT
                 )
             ); 
 
             $query =   'UPDATE t_user SET 
-                        usePseudo = :usePseudo, useFirstname = :useFirstname, useName = :useName, useMail = :useMail, useTelephone = :useTelephone
+                        usePseudo = :usePseudo, useFirstname = :useFirstname, useName = :useName, useMail = :useMail, usePhone = :usePhone, useProfilePref = :useProfilePref
                         WHERE idUser = :id';
         }
 

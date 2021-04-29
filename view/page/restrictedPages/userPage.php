@@ -206,6 +206,18 @@
                 ?>
             </div>
 
+            <div class="form-group col-md-4 mb-3">
+                <label for="phone">Thème</label> 
+                <?php // TODO : faire une liste déroulante avec les thème dispo (selon database), et faire pareil pour les catégories d'appartement !!!
+                    echo '<input type="tel" class="form-control" name="profilePref" id="profilePref" placeholder="' . $userProfile["useProfilePref"] . '" ' . 'value="' . $userProfile["useProfilePref"] . '" ';
+                    if (!$selfPage)
+                    {
+                        echo 'disabled="disabled"';
+                    }
+                    echo '>';
+                ?>
+            </div>
+
         </div>
 
         <?php
