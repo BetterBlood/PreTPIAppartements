@@ -204,8 +204,7 @@ class UserController extends Controller
         // errors
         $passwordModifFailed = false;
         $imageEmpty = false;
-        $errorPngFile = false;
-        
+        $errorPngFile = true;
 
         if (array_key_exists("idUser", $_GET) && $database->userExist($_GET["idUser"]))
         {
@@ -221,18 +220,16 @@ class UserController extends Controller
                 if (isset($_POST) && !empty($_POST))
                 {
                     // TODO : si le temps le permet : vérification du form 
-                    
                     $user["idUser"] = $_SESSION["idUser"];
+                    $errorPngFile = false;
 
                     if (array_key_exists("fileUpdate", $_POST)) // form just pour update l'image
                     {
-                        $errorPngFile = true;
-
                         if (!empty($_FILES["image"]["name"]) && $_FILES["image"]["name"] != "" && $this->extensionOk($_FILES["image"]["name"])) // vérifie qu'il y a bien un fichier de séléctionné // TODO : si le temps le permet : gérer fichier vide (!= "" ne fonctionne pas)
                         {
                             $image = "";
                             $imgName = date("YmdHis") . "_" . $_FILES["image"]["name"];
-                            
+
                             $size = getimagesize($_FILES["image"]["tmp_name"]);
 
                             switch (pathinfo($imgName, PATHINFO_EXTENSION))
@@ -241,12 +238,13 @@ class UserController extends Controller
                                 case "png":
                                     if ($size[0] * $size[1] < PHP_INT_MAX) // gestion des png trop volumineux
                                     {
+                                        
                                         $image = imageCreateFromPng($_FILES["image"]["tmp_name"]); // prépare la compression
                                         $errorPngFile = false;
                                     }
                                     else
                                     {
-                                        $errorPngFile = true;
+                                        $errorPngFile = true; // TODO : comprendre pourquoi $errorPngFile n'est jamais set a true
                                     }
                                     break;
             
@@ -283,10 +281,13 @@ class UserController extends Controller
                         else 
                         {
                             $imageEmpty = true;
+                            $errorPngFile = false;
                         }
                     }
                     else if (array_key_exists("modifPasswordForm", $_POST)) // gère la modification du password
                     {
+                        $errorPngFile = false;
+
                         if (array_key_exists("usePassword", $_POST) && array_key_exists("confirmePassword", $_POST))
                         {
                             if ($_POST["usePassword"] === $_POST["confirmePassword"]) // TODO : si le temps le permet : ajouter des validation pour le mot de passe
@@ -305,6 +306,7 @@ class UserController extends Controller
                     }
                     else 
                     {
+                        $errorPngFile = false;
                         // TODO : si le temps le permet : faire la vérification de champ (ptetre faire une méthode, étant donné que l'on doit aussi l'utiliser pour l'inscription)
                         $user["usePseudo"] = $_POST["pseudo"];
                         $user["useFirstname"] = $_POST["useFirstname"];
@@ -323,10 +325,24 @@ class UserController extends Controller
 
                     $view = file_get_contents('view/page/restrictedPages/userPage.php');
                 }
+                else
+                {
+                    if (array_key_exists("pic", $_GET) && $_GET["pic"] == "true")
+                    {
+                        $errorPngFile = true;
+                    }
+                    else
+                    {
+                        $errorPngFile = false;
+                    }
+                    
+                }
             }
         }
         else if (array_key_exists("idUser", $_SESSION))
         {
+            $errorPngFile = false;
+
             $appartements = $database->getAppartementsByUserId($_SESSION["idUser"]);
             $userProfile = $database->getOneUserById($_SESSION["idUser"]);
             $view = file_get_contents('view/page/restrictedPages/userPage.php');
@@ -340,6 +356,7 @@ class UserController extends Controller
         else 
         {
             $userProfile = null;
+            $errorPngFile = false;
             $view = file_get_contents('view/page/restrictedPages/loginRegister/loginForm.php');
         }
 

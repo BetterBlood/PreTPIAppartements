@@ -41,7 +41,7 @@
         if (isset($selfPage) && $selfPage) // page de l'utilisateur en accès propriétaire 
         {
 
-            echo '<form action="index.php?controller=user&action=profile&idUser=' . $userProfile["idUser"] . '" method="post" enctype="multipart/form-data">';
+            echo '<form action="index.php?controller=user&action=profile&pic=true&idUser=' . $userProfile["idUser"] . '" method="post" enctype="multipart/form-data">';
                 ?>
                 <input type="text" id="fileUpdate" name="fileUpdate" style="display: none;" value="true">
                 <div class="form-group">
@@ -50,13 +50,16 @@
                         <input type="file" name="image" id="image" />
                         <input class="btn btn-primary mb-2" type="submit" value="Modifier" />
                         <?php
-                        if ((isset($imageEmpty) && $imageEmpty) || $errorPngFile)
+                        if ((isset($imageEmpty) && $imageEmpty) || $errorPngFile) // TODO : comprendre pourquoi $errorPngFile n'est jamais set a true
                         {
                             echo '<strong class="text-danger">l\'image séléctionnée n\'est pas valide, ou trop volumineuse.</strong>';
                         }
-                        var_dump(isset($imageEmpty));
-                        var_dump($imageEmpty);
-                        var_dump($errorPngFile);
+
+                        // DEBUG
+                        // var_dump(isset($imageEmpty));
+                        // var_dump($imageEmpty);
+                        //var_dump($errorPngFile);
+                        //var_dump($_POST);
                         ?>
                     </p>
                 </div>
