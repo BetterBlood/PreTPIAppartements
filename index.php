@@ -15,17 +15,10 @@ if ($debug) {
 }
 date_default_timezone_set('Europe/Zurich'); // pour les dates
 
-// previous
 include_once 'controller/Controller.php';
 include_once 'controller/HomeController.php';
-include_once 'controller/RecipeController.php';
-
-
-
-// new
 include_once 'controller/UserController.php';
 include_once 'controller/AppartementController.php';
-
 
 class MainController {
 
@@ -58,10 +51,6 @@ class MainController {
         switch($page){
             case 'home':
                 $link = new HomeController();
-                break;
-
-            case 'recipe':
-                $link = new RecipeController();
                 break;
 
             case 'user':
