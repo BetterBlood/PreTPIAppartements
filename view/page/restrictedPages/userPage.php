@@ -234,9 +234,10 @@
         <table class="table table-striped table-dark">
         <tr>
             <th>nom</th> 
-            <th >catégorie</th>
+            <th>catégorie</th>
 		    <th>Surface</th>
-            <th>note</th>
+            <th>Note</th>
+            <th>Prix</th>
             <th class="text-center">auteur</th>
             <th colspan="3" class="text-center">détail</th>
         </tr>
@@ -266,6 +267,7 @@
                     {
                         echo '<td>pas encore notée</td>';
                     }
+                    echo '<td>' . htmlspecialchars($appartement['appPrix']) . ' CHF</td>';
                     echo '<td class="text-center">' . $user["usePseudo"] . '</td>';
 
                     if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détails d'une recette
@@ -312,7 +314,7 @@
 
                         // première partie : concerne la recette elle-même
                         $imageLink = '"resources/image/Appartements/' . htmlspecialchars($appartement['appImage']) . '"';
-                        echo '<td COLSPAN="3">';
+                        echo '<td COLSPAN="4">';
                             echo '<div class="card" style="width: 35rem;">';
                                 echo '<img src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de la recette">';
                                 echo '<div class="card-body" style="color:black">';
