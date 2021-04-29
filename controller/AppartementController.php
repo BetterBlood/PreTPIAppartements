@@ -563,9 +563,9 @@ class AppartementController extends Controller {
         {
             if(!empty($_FILES["image"]["name"]) && $this->extensionOk($_FILES["image"]["name"])) // TODO : si le temps le permet : faire de meilleures vérifications (ex: nom de fichier trop long... )
             {
-                if ($appartement["recImage"] != "defaultAppartementPicture.jpg" && file_exists("resources/image/Appartements/" . $appartement["recImage"]))
+                if ($appartement["appImage"] != "defaultAppartementPicture.jpg" && file_exists("resources/image/Appartements/" . $appartement["appImage"]))
                 {
-                    unlink("resources/image/Appartements/" . $appartement["recImage"]); // suppression de l'ancienne image
+                    unlink("resources/image/Appartements/" . $appartement["appImage"]); // suppression de l'ancienne image
                 }
                 
                 $image = "";
@@ -592,7 +592,7 @@ class AppartementController extends Controller {
 
                 imagejpeg($image, "resources/image/Appartements/" . $imgName, 75); // compression de l'image
                 //move_uploaded_file($_FILES["image"]["tmp_name"], "resources/image/Appartements/" . $imgName);
-                $appartement["recImage"] = $imgName;
+                $appartement["appImage"] = $imgName;
                 
                 $database->editAppartement($appartement); // modification du nom dans la database
             }
