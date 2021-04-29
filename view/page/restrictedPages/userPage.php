@@ -12,7 +12,10 @@
 			{
 				header("Location: index.php?controller=user&action=loginForm");
 			}
-			
+            
+            
+            //var_dump($_FILES);
+            //var_dump($size);
 		?>
     </h2>
 
@@ -38,7 +41,7 @@
         if (isset($selfPage) && $selfPage) // page de l'utilisateur en accès propriétaire 
         {
 
-            echo '<form action="index.php?controller=user&action=profile&idUser=' . $userProfile["idUser"] . '" method="post" enctype="multipart/form-data">';
+            echo '<form action="index.php?controller=user&action=profile&pic=true&idUser=' . $userProfile["idUser"] . '" method="post" enctype="multipart/form-data">';
                 ?>
                 <input type="text" id="fileUpdate" name="fileUpdate" style="display: none;" value="true">
                 <div class="form-group">
@@ -47,10 +50,16 @@
                         <input type="file" name="image" id="image" />
                         <input class="btn btn-primary mb-2" type="submit" value="Modifier" />
                         <?php
-                        if (isset($imageEmpty) && $imageEmpty)
+                        if ((isset($imageEmpty) && $imageEmpty) || $errorPngFile) // TODO : comprendre pourquoi $errorPngFile n'est jamais set a true
                         {
-                            echo 'l\'image séléctionnée n\'est pas valide';
+                            echo '<strong class="text-danger">l\'image séléctionnée n\'est pas valide, ou trop volumineuse.</strong>';
                         }
+
+                        // DEBUG
+                        // var_dump(isset($imageEmpty));
+                        // var_dump($imageEmpty);
+                        //var_dump($errorPngFile);
+                        //var_dump($_POST);
                         ?>
                     </p>
                 </div>
@@ -197,6 +206,18 @@
                 ?>
             </div>
 
+            <div class="form-group col-md-4 mb-3">
+                <label for="phone">Thème</label> 
+                <?php // TODO : faire une liste déroulante avec les thème dispo (selon database), et faire pareil pour les catégories d'appartement !!!
+                    echo '<input type="tel" class="form-control" name="profilePref" id="profilePref" placeholder="' . $userProfile["useProfilePref"] . '" ' . 'value="' . $userProfile["useProfilePref"] . '" ';
+                    if (!$selfPage)
+                    {
+                        echo 'disabled="disabled"';
+                    }
+                    echo '>';
+                ?>
+            </div>
+
         </div>
 
         <?php
@@ -234,9 +255,10 @@
         <table class="table table-striped table-dark">
         <tr>
             <th>nom</th> 
-            <th >catégorie</th>
+            <th>catégorie</th>
 		    <th>Surface</th>
-            <th>note</th>
+            <th>Note</th>
+            <th>Prix</th>
             <th class="text-center">auteur</th>
             <th colspan="3" class="text-center">détail</th>
         </tr>
@@ -266,6 +288,7 @@
                     {
                         echo '<td>pas encore notée</td>';
                     }
+                    echo '<td>' . htmlspecialchars($appartement['appPrix']) . ' CHF</td>';
                     echo '<td class="text-center">' . $user["usePseudo"] . '</td>';
 
                     if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détails d'une recette
@@ -312,7 +335,7 @@
 
                         // première partie : concerne la recette elle-même
                         $imageLink = '"resources/image/Appartements/' . htmlspecialchars($appartement['appImage']) . '"';
-                        echo '<td COLSPAN="3">';
+                        echo '<td COLSPAN="4">';
                             echo '<div class="card" style="width: 35rem;">';
                                 echo '<img src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de la recette">';
                                 echo '<div class="card-body" style="color:black">';
