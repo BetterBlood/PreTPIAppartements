@@ -86,7 +86,7 @@
         
         <div class="d-flex">
             <div class="mx-auto mt-3 mb-3">
-                <input class="btn btn-primary" type="submit" value="valider cette étape">
+                <input class="btn btn-primary" type="submit" value="Enregistrer les modifications">
             </div>
         </div>
     
