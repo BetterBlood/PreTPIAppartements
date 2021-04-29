@@ -173,7 +173,8 @@ class UserController extends Controller
 
                 //Vérifie le connecteur
                 $array = (array) $database;
-                if($array["\0Database\0connector"] != NULL){
+
+                if($array["\0Database\0connector"] != NULL && $database->userExist(htmlspecialchars($_POST['username']))){
                     
                     $database->insertUser($username, $firstName, $lastName, $hashed_password);
                     $_SESSION['isConnected'] = false;
@@ -181,6 +182,11 @@ class UserController extends Controller
                     //$_SESSION['idUser'] = $user['idUser']; // l'id n'existe pas puisque il n'y a pas de get du dernier user ajouter a la database
                     header('location: index.php'); // redirection vers l'index
                     //rediriger vers une page de confirmation/erreur
+                }
+                else
+                {
+                    $error = true;
+                    header('location: index.php'); // TODO : ajouter un message d'erreur pour l'utilisateur (pseudo déjà prit) !!!
                 }
             }
         }
@@ -308,12 +314,24 @@ class UserController extends Controller
                     {
                         $errorPngFile = false;
                         // TODO : si le temps le permet : faire la vérification de champ (ptetre faire une méthode, étant donné que l'on doit aussi l'utiliser pour l'inscription)
+                        
                         $user["usePseudo"] = $_POST["pseudo"];
+                        // TODO : vérifier que le pseudo est disponible
+
                         $user["useFirstname"] = $_POST["useFirstname"];
+                        // TODO : vérification de champ basique
+
                         $user["useName"] = $_POST["useName"];
+                        // TODO : vérification de champ basique
+
                         $user["useMail"] = $_POST["mail"];
+                        // TODO : vérification de champ basique + mail
+
                         $user["usePhone"] = $_POST["phone"];
+                        // TODO : vérification de champ basique + téléphone
+
                         $user["useProfilePref"] = $_POST["profilePref"];
+                        // TODO : vérification de champ basique + vérifier que c'est un id dispo de t_profil
                     }
 
                     if (!$passwordModifFailed && !$imageEmpty && !$errorPngFile) // NOTE : (à vérifier à la fin du projet) ajouter les autre erreur ici afin que cela ne modifie pas la database s'il y a une erreur de form

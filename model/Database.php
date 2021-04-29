@@ -917,6 +917,29 @@ class Database {
     }
 
     /**
+     * vérifie dans la database si l'utilisateur existe
+     *
+     * @param string $usePseudo
+     * @return bool
+     */
+    public function userExistByPseudo($usePseudo)
+    {
+        $req = $this->queryPrepareExecute('SELECT * FROM t_user', null);// appeler la méthode pour executer la requète
+
+        $users = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
+
+        foreach($users as $user)
+        {
+            if ($user["usePseudo"] == $usePseudo)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * permet de modifier un utilisateur
      *
      * @param array $user
