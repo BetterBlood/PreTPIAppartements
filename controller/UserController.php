@@ -78,12 +78,12 @@ class UserController extends Controller
      * Login utilisateur
      *
      */
-    private function loginAction() // TODO : modifier les header en redirection MVC !!!
+    private function loginAction() // TODO : modifier les header en redirection MVC !!! 
     {
         $username = htmlspecialchars($_POST['username']);
         $password = htmlspecialchars($_POST['password']);
 
-        $database = new Database();
+        $database = new Database(); // TODO : modifier la base de donnée : utilisateur et appartement avec 2 champs en plus : "use/app_CreatedBy" et "use/app_CreatedOn" !!!
 
         //Vérifie le connecteur
         $array = (array) $database;
@@ -164,11 +164,6 @@ class UserController extends Controller
         $errorUsername = false;
         $errorPassword = false;
         
-        if (array_key_exists("error", $_GET))
-        {
-            $error = true;
-        }
-        
         //Vérification de l'existence des champs
         if (key_exists("username", $_POST) && key_exists("firstName", $_POST) && key_exists("lastName", $_POST) && key_exists("password1", $_POST) && key_exists("password2", $_POST))
         {
@@ -179,12 +174,14 @@ class UserController extends Controller
             {
                 $errorRegister = true;
                 $errorUsername = true;
+                error_log("register, pseudo : {" . htmlspecialchars($_POST["username"]) . "} [jour, heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
             }
 
             if (($_POST['password1'] != $_POST['password2']))
             {
                 $errorRegister = true;
                 $errorPassword = true;
+                error_log("register, password [jour, heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
             }
 
             if ($errorRegister == false)
@@ -195,7 +192,6 @@ class UserController extends Controller
                 $lastName = htmlspecialchars($_POST['lastName']);
                 $password = htmlspecialchars($_POST['password1']);
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                
                 
 
                 //Vérifie le connecteur
@@ -213,6 +209,7 @@ class UserController extends Controller
                 else
                 {
                     $errorRegister = true;
+                    error_log("register, base de donnée [jour, heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
                 }
             }
             else
