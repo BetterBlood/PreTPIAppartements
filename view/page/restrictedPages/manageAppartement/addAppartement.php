@@ -45,7 +45,7 @@
 
             <div class="col-md-3 mb-3 pt-n2 pb-n2">
                 <label for="appCategory">Catégorie</label>
-                <?php
+                <?php // TODO : faire une liste déroulante pour les catégories d'appartement !!!
                     echo '<input type="text" class="form-control" name="appCategory" id="appCategory" placeholder="Appartement" value="' . $appartement["appCategory"] . '">';
                 ?>
             </div>
