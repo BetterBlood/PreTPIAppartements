@@ -9,7 +9,6 @@ use function PHPSTORM_META\elementType;
  * Controler pour gérer les appartements
  */
 
-//include_once 'model/RecetteRepository.php';
 include_once("model/Database.php");
 
 class AppartementController extends Controller {
