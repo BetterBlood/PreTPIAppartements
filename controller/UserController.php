@@ -220,11 +220,11 @@ class UserController extends Controller
             $userProfile = $database->getOneUserById(htmlspecialchars($_GET["idUser"]));
             $view = file_get_contents('view/page/restrictedPages/userPage.php');
             $size = "";
+            $profiles = $database->getAllProfiles();
 
             if (array_key_exists("idUser", $_SESSION) && $_SESSION["idUser"] == $_GET["idUser"])
             {
                 $selfPage = true;
-                $profiles = $database->getAllProfiles();
 
                 if (isset($_POST) && !empty($_POST))
                 {
