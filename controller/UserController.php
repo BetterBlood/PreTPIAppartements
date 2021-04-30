@@ -161,7 +161,8 @@ class UserController extends Controller
                 echo 'Les mots de passe ne sont pas identiques<br>';
             }
 
-            if($error == false){
+            if($error == false)
+            {
                 //TODO : si le temps le permet : vérification
                 $username = htmlspecialchars($_POST['username']);
                 $firstName = htmlspecialchars($_POST['firstName']);
@@ -219,11 +220,11 @@ class UserController extends Controller
             $userProfile = $database->getOneUserById(htmlspecialchars($_GET["idUser"]));
             $view = file_get_contents('view/page/restrictedPages/userPage.php');
             $size = "";
+            $profiles = $database->getAllProfiles();
 
             if (array_key_exists("idUser", $_SESSION) && $_SESSION["idUser"] == $_GET["idUser"])
             {
                 $selfPage = true;
-                $profiles = $database->getAllProfiles();
 
                 if (isset($_POST) && !empty($_POST))
                 {
@@ -233,7 +234,7 @@ class UserController extends Controller
 
                     if (array_key_exists("fileUpdate", $_POST)) // form pour update l'image
                     {
-                        if (!empty($_FILES["image"]["name"]) && $_FILES["image"]["name"] != "" && $this->extensionOk($_FILES["image"]["name"])) // vérifie qu'il y a bien un fichier de séléctionné // TODO : si le temps le permet : gérer fichier vide (!= "" ne fonctionne pas)
+                        if (!empty($_FILES["image"]["name"]) && $_FILES["image"]["name"] != "" && $this->extensionOk($_FILES["image"]["name"])) // vérifie qu'il y a bien un fichier de séléctionné
                         {
                             $image = "";
                             $imgName = date("YmdHis") . "_" . $_FILES["image"]["name"];
@@ -242,7 +243,7 @@ class UserController extends Controller
 
                             switch (pathinfo($imgName, PATHINFO_EXTENSION))
                             {
-                                case "PNG": // TODO : régler le problème avec les png !!!
+                                case "PNG":
                                 case "png":
                                     if ($size[0] * $size[1] < PHP_INT_MAX) // gestion des png trop volumineux
                                     {
@@ -252,7 +253,7 @@ class UserController extends Controller
                                     }
                                     else
                                     {
-                                        $errorPngFile = true; // TODO : comprendre pourquoi $errorPngFile n'est jamais set a true
+                                        $errorPngFile = true;
                                     }
                                     break;
             

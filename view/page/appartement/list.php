@@ -33,21 +33,17 @@
 			$startIndex = $_GET["start"];
 		}
 
-		foreach ($appartements as $appartement) {
+		foreach ($appartements as $appartement) 
+		{
 			$user = $database->getOneUserById($appartement["idUser"]);
 
 			echo '<tr>';
 				echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
 				echo '<td>' . htmlspecialchars($appartement['appCategory']) . '</td>';
 				echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
-				if (isset($appartement["appRate"])) // TODO : modifier ça
-				{
-					echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
-				}
-				else
-				{
-					echo '<td>pas encore notée</td>';
-				}
+
+				echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
+				
 				echo '<td>' . htmlspecialchars($appartement['appPrix']) . ' CHF</td>';
 				echo '<td class="text-center">' . $user["usePseudo"] . '</td>';
 
