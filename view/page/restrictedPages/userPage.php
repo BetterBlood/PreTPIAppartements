@@ -207,40 +207,37 @@
             </div>
 
             <div class="form-group col-md-4 mb-3">
-                <label for="phone">Thème</label> 
-                <?php // TODO : bloquer la liste pour le visionnage en !$selfpage !!!!
-                    // echo '<input type="tel" class="form-control" name="profilePref" id="profilePref" placeholder="' . $userProfile["useProfilePref"] . '" ' . 'value="' . $userProfile["useProfilePref"] . '" ';
-                    // if (!$selfPage)
-                    // {
-                    //     echo 'disabled="disabled"';
-                    // }
-                    // echo '>';
-                ?>
+                <label for="phone">Thème</label>
+                <?php
+                echo '<select id="profilePref" name="profilePref" class="form-control" ';
+                    if (!$selfPage)
+                    {
+                        echo 'disabled="disabled"';
+                    }
+                    echo '>';
+                    
+                    echo '<option value="-1" ';
 
-                <select id="profilePref" name="profilePref" class="form-control">
-                    <?php
+                    if (array_key_exists("useProfilePref", $userProfile) && $userProfile["useProfilePref"] == "-1")
+                    {
                         
-                        echo '<option value="-1" ';
+                        echo 'selected';
+                    }
+                    
+                    echo '>aucun</option>';
 
-                        if (array_key_exists("useProfilePref", $userProfile) && $userProfile["useProfilePref"] == "-1")
+                    foreach ($profiles as $profile) 
+                    {
+                        echo '<option value="' . $profile["idProfile"] . '"';
+
+                        if (array_key_exists("useProfilePref", $userProfile) && $userProfile["useProfilePref"] == $profile["idProfile"])
                         {
-                            
                             echo 'selected';
                         }
                         
-                        echo '>aucun</option>';
-
-                        foreach ($profiles as $profile) {
-                            echo '<option value="' . $profile["idProfile"] . '"';
-
-                            if (array_key_exists("useProfilePref", $userProfile) && $userProfile["useProfilePref"] == $profile["idProfile"])
-                            {
-                                echo 'selected';
-                            }
-                            
-                            echo '>' . $profile["proName"] . '</option>';
-                        }
-                    ?>
+                        echo '>' . $profile["proName"] . '</option>';
+                    }
+                ?>
                 </select>
             </div>
 
@@ -299,7 +296,8 @@
                 $startIndex = $_GET["start"];
             }
 
-            foreach ($appartements as $appartement) {
+            foreach ($appartements as $appartement) 
+            {
                 $user = $database->getOneUserById($appartement["idUser"]);
 
                 echo '<tr>';
@@ -308,7 +306,7 @@
                     echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
                     
                     echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
-                    
+
                     echo '<td>' . htmlspecialchars($appartement['appPrix']) . ' CHF</td>';
                     echo '<td class="text-center">' . $user["usePseudo"] . '</td>';
 
