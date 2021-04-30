@@ -146,6 +146,6 @@
   </div>
     <br><br>
     <div class="text-light">
-      <h1>Bienvenue sur Swedish Tortilla</h1>
-      <p>Ce site a pour but de recenser tous types d'appartement. Nous vous invitions à toutes les essayer afin de les évaluer selon vos compétences en cuisine. Nous sommes tous des explorateurs des papilles gustatives.</p>
+      <h1>Bienvenue sur LocAppart </h1>
+      <p>Ce site a pour but de recenser des appartements comme des maisons. Nous vous invitions à toutes les visiter afin de les évaluers selon vos préférances. Nous sommes tous des explorateurs de nouvel horizon</p>
     </div>
