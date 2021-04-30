@@ -1030,5 +1030,32 @@ class Database {
 
         $this->unsetData($req);
     }
+
+
+
+    public function getAllProfiles()
+    { 
+        $req = $this->queryPrepareExecute('SELECT * FROM t_profile' , null);// appeler la méthode pour executer la requète
+
+        $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
+
+        $this->unsetData($req);
+
+        return $appartements;// retour tous les recettes
+    }
+
+    public function getProfileNameById($idProfile)
+    {
+        $req = $this->queryPrepareExecute('SELECT * FROM t_profile WHERE idProfile = ' . $idProfile, null);
+
+        $profiles = $this->formatData($req);
+
+        $this->unsetData($req);
+
+        return $profiles[0]["proName"];
+    }
+
+
+    
 }
 ?>

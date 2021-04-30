@@ -102,6 +102,7 @@ class UserController extends Controller
             $_SESSION['isConnected'] = true;
             $_SESSION['username'] = $user['usePseudo'];
             $_SESSION['idUser'] = $user['idUser'];
+            $_SESSION['theme'] = $database->getProfileNameById($user['useProfilePref']);
             header('location: index.php');
         }
         else{
@@ -222,6 +223,7 @@ class UserController extends Controller
             if (array_key_exists("idUser", $_SESSION) && $_SESSION["idUser"] == $_GET["idUser"])
             {
                 $selfPage = true;
+                $profiles = $database->getAllProfiles();
 
                 if (isset($_POST) && !empty($_POST))
                 {
@@ -229,7 +231,7 @@ class UserController extends Controller
                     $user["idUser"] = $_SESSION["idUser"];
                     $errorPngFile = false;
 
-                    if (array_key_exists("fileUpdate", $_POST)) // form just pour update l'image
+                    if (array_key_exists("fileUpdate", $_POST)) // form pour update l'image
                     {
                         if (!empty($_FILES["image"]["name"]) && $_FILES["image"]["name"] != "" && $this->extensionOk($_FILES["image"]["name"])) // vérifie qu'il y a bien un fichier de séléctionné // TODO : si le temps le permet : gérer fichier vide (!= "" ne fonctionne pas)
                         {
@@ -290,7 +292,7 @@ class UserController extends Controller
                             $errorPngFile = false;
                         }
                     }
-                    else if (array_key_exists("modifPasswordForm", $_POST)) // gère la modification du password
+                    else if (array_key_exists("modifPasswordForm", $_POST)) // gère la modification du mot de passe
                     {
                         $errorPngFile = false;
 
@@ -338,7 +340,9 @@ class UserController extends Controller
                     {
                         $modificationDone = true;
                         $database->updateUser($user);
+                        
                         $userProfile = $database->getOneUserById($_SESSION["idUser"]); // permet d'afficher directement les modifications
+                        $_SESSION['theme'] = $database->getProfileNameById($userProfile['useProfilePref']);
                     }
 
                     $view = file_get_contents('view/page/restrictedPages/userPage.php');
