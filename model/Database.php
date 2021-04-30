@@ -114,11 +114,12 @@ class Database {
     {
         $req = $this->queryPrepareExecute('SELECT Count(idAppartement) FROM t_appartement', null);// appeler la méthode pour executer la requète
         $appartements = $this->formatData($req);
+
         return $appartements[0]['Count(idAppartement)'];
     }
 
     /**
-     * vérifie si la recette existe
+     * vérifie si l'appartement existe
      *
      * @param int $idAppartement
      * @return bool
@@ -141,7 +142,7 @@ class Database {
     }
 
     /**
-     * récupère tous les recettes de la database
+     * récupère tous les appartements de la database
      *
      * @param int $start
      * @param int $length
@@ -155,7 +156,7 @@ class Database {
 
         $this->unsetData($req);
 
-        return $appartements;// retour tous les recettes
+        return $appartements;// retour tous les appartements
     }
 
     /**
@@ -178,7 +179,7 @@ class Database {
     }
 
     /**
-     * permet d'obtenir une recette spécifique
+     * permet d'obtenir un appartement spécifique
      *
      * @param int $id
      * @return array
@@ -191,11 +192,11 @@ class Database {
 
         $this->unsetData($req);
 
-        return $appartements[0];// retour la première valeur du tableau (il ne contient qu'une recette)
+        return $appartements[0];// retour la première valeur du tableau (il ne contient qu'un appartement)
     }
 
     /**
-     * retourn la recette la plus récente
+     * retourn l'appartement le plus récent
      *
      * @return array
      */
@@ -214,7 +215,7 @@ class Database {
     }
 
     /**
-     * Retourne la recette avec la meilleure note
+     * Retourne l'appartement avec la meilleure note
      *
      * @return array
      */
@@ -245,7 +246,7 @@ class Database {
     }
 
     /**
-     * ajoute une recette a la base de donnée
+     * ajoute un appartement a la base de donnée
      *
      * @param array $appartement
      * @return void
@@ -322,7 +323,7 @@ class Database {
     }
 
     /**
-     * permet d'obtenir les recette liées a un utilisateur
+     * permet d'obtenir les appartements liées a un utilisateur
      *
      * @param int $userId
      * @return array
@@ -335,11 +336,11 @@ class Database {
 
         $this->unsetData($req);
 
-        return $appartements;// retour tous les recettes
+        return $appartements;// retour tous les appartements
     }
 
     /**
-     * permet de modifier une recette
+     * permet de modifier un appartement
      *
      * @param array $appartement
      * @return void
@@ -406,7 +407,7 @@ class Database {
     }
 
     /**
-     * supprime une recette
+     * supprime un appartement
      *
      * @param int $idappartement
      * @return void
@@ -429,43 +430,43 @@ class Database {
     }
 
     /**
-     * permet d'obtenir toutes les notations d'une recette
+     * permet d'obtenir toutes les notations d'un appartement
      *
      * @param int $idappartement
      * @return array
      */
-    public function getAllRatingsForThisAppartement($idAppartement)
-    {
-        $req = $this->queryPrepareExecute('SELECT * FROM t_rating LEFT JOIN t_user ON t_rating.idUser = t_user.idUser WHERE t_rating.idAppartement = ' . $idAppartement, null);// appeler la méthode pour executer la requète
+    // public function getAllRatingsForThisAppartement($idAppartement)
+    // {
+    //     $req = $this->queryPrepareExecute('SELECT * FROM t_rating LEFT JOIN t_user ON t_rating.idUser = t_user.idUser WHERE t_rating.idAppartement = ' . $idAppartement, null);// appeler la méthode pour executer la requète
 
-        $ratings = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
+    //     $ratings = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 
-        $this->unsetData($req);
+    //     $this->unsetData($req);
 
-        return $ratings;// retour toute les évaluations de la recette
-    }
+    //     return $ratings;// retour toute les évaluations de l'appartement
+    // }
 
     /**
-     * permet de savoir si un utilisateur a déjà noté la recette
+     * permet de savoir si un utilisateur a déjà noté l'appartement
      *
      * @param int $idUser
      * @param int $idAppartement
      * @return bool
      */
-    public function userAlreadyRateThisAppartement($idUser, $idAppartement)
-    {
-        $ratings = $this->getAllRatingsForThisappartement($idAppartement);
+    // public function userAlreadyRateThisAppartement($idUser, $idAppartement)
+    // {
+    //     $ratings = $this->getAllRatingsForThisappartement($idAppartement);
 
-        foreach($ratings as $rating)
-        {
-            if ($rating["idUser"] == $idUser)
-            {
-                return true;
-            }
-        }
+    //     foreach($ratings as $rating)
+    //     {
+    //         if ($rating["idUser"] == $idUser)
+    //         {
+    //             return true;
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
     /**
      * ajoute une évaluation
@@ -526,7 +527,7 @@ class Database {
     }
 
     /**
-     * vérifie si la recette existe
+     * vérifie si l'appartement existe
      *
      * @param int $idUser
      * @param int $idAppartement
@@ -1030,5 +1031,48 @@ class Database {
 
         $this->unsetData($req);
     }
+
+
+
+
+
+
+    //profile section
+
+    public function profileExist($idProfile)
+    {
+        $req = $this->queryPrepareExecute('SELECT * FROM t_profile WHERE idProfile = ' . $idProfile, null);
+
+        $profiles = $this->formatData($req);
+
+        $this->unsetData($req);
+
+        return $profiles[0];
+    }
+
+    public function getAllProfiles()
+    { 
+        $req = $this->queryPrepareExecute('SELECT * FROM t_profile' , null);
+
+        $appartements = $this->formatData($req);
+
+        $this->unsetData($req);
+
+        return $appartements;
+    }
+
+    public function getProfileNameById($idProfile)
+    {
+        $req = $this->queryPrepareExecute('SELECT * FROM t_profile WHERE idProfile = ' . $idProfile, null);
+
+        $profiles = $this->formatData($req);
+
+        $this->unsetData($req);
+
+        return $profiles[0]["proName"];
+    }
+
+
+
 }
 ?>

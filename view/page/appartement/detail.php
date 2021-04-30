@@ -2,7 +2,7 @@
 
 	<h2>
 		<?php
-			// redirection si la recette n'existe pas
+			// redirection si l'appartement n'existe pas
 			if (isset($appartement))
 			{
 				echo $appartement['appName'] . ', dans la catégorie : ' . $appartement["appCategory"];
@@ -22,7 +22,7 @@
 			</div>
 			<?php
 				$imageLink = '"resources/image/Appartements/' . htmlspecialchars($appartement['appImage']) . '"';
-				echo '<img class="d-block w-100" src=' . $imageLink . ' alt="image d\'illustration de la recette">';
+				echo '<img class="d-block w-100" src=' . $imageLink . ' alt="image d\'illustration de l\'appartement">';
 				echo '<p>Description : ' . $appartement['appDescription'] . '</p>';
 			?>
 			
@@ -62,12 +62,12 @@
 	
 	<div class="row">
 		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-white">
-			<p>Créateur de la recette :</p>
+			<p>Bien mis en vente/location par :</p>
 
 			<?php
 			$imageProfilLink = '"resources/image/Users/' . htmlspecialchars($appartementCreator['useImage']) . '"';
 			echo '<div class="card" style="width: 18rem;">';
-				echo '<img src=' . $imageProfilLink . ' class="card-img-top" alt="image de profile du créateur de la recette">';
+				echo '<img src=' . $imageProfilLink . ' class="card-img-top" alt="image de profile du créateur de l\'appartement">';
 				echo '<div class="card-body" style="color:black">';
 					echo '<h5 class="card-title">' . $appartementCreator["usePseudo"] . '</h5>';
 					echo '<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card\'s content.</p>';
@@ -90,7 +90,7 @@
 			
 		</div>
 		<div class="text-white mb-5 pb-5">
-			<a href="index.php?controller=appartement&action=list&id=<?php echo $appartement["idAppartement"]; //. '&start=';// ptetre retrouver le start index de l'image ?>">Retour à la liste des recettes</a>
+			<a href="index.php?controller=appartement&action=list&id=<?php echo $appartement["idAppartement"]; //. '&start=';// ptetre retrouver le start index de l'image ?>">Retour à la liste des appartements</a>
 		</div>
 	</div>
 	

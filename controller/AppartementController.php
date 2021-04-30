@@ -6,10 +6,9 @@ use function PHPSTORM_META\elementType;
  * ETML
  * Auteur : Jeremiah Steiner
  * Date: 27.04.2021
- * Controler pour gérer les recettes
+ * Controler pour gérer les appartements
  */
 
-//include_once 'model/RecetteRepository.php';
 include_once("model/Database.php");
 
 class AppartementController extends Controller {
@@ -30,15 +29,13 @@ class AppartementController extends Controller {
             $action = "listAction";
         }
         else 
-        {
-            switch($_GET["action"]) 
+        {   
+            // TODO : vérifier que les conditions sont les bonnes pour les nouvelles page ajoutée
+            switch($_GET["action"])
             {
                 case "list":
-                case "wishlist":
                 case "rate":
                 case "unrate":
-                case "addWish":
-                case "removeWish":
                     $action = $_GET["action"] . "Action";
                     break;
                     
@@ -53,6 +50,9 @@ class AppartementController extends Controller {
                     }
                     break;
 
+                case "wishlist":
+                case "addWish":
+                case "removeWish":
                 case "addAppartement":
                     if (array_key_exists("isConnected", $_SESSION) && $_SESSION["isConnected"])
                     {
@@ -97,7 +97,7 @@ class AppartementController extends Controller {
         $database = new Database();
 
         $startIndex = 0;
-        $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre de recette affichée
+        $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre d'appartement affiché
         $_SESSION["appartementsPerPage"] = $lengthAppartement;
 
         if (array_key_exists("start", $_GET) && $_GET["start"] > 0) // si le paramettre de start n'est pas négatif
@@ -113,7 +113,7 @@ class AppartementController extends Controller {
 
         if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
         {
-            if ($database->wishExtist($_SESSION["idUser"], $_GET["id"]))
+            if (array_key_exists("idUser", $_SESSION) && $database->wishExtist($_SESSION["idUser"], $_GET["id"]))
             {
                 $inWish = true;
             }
@@ -147,7 +147,7 @@ class AppartementController extends Controller {
         $database = new Database();
 
         $startIndex = 0;
-        $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre de recette affichée
+        $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre d'appartement affiché
         $_SESSION["appartementsPerPage"] = $lengthAppartement;
 
         if (array_key_exists("start", $_GET) && $_GET["start"] > 0) // si le paramettre de start n'est pas négatif
@@ -305,7 +305,7 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet d'ajouter ou de modifier sa note pour une recette
+     * permet d'ajouter ou de modifier sa note pour un appartement
      *
      * @return string
      */
@@ -326,7 +326,7 @@ class AppartementController extends Controller {
             $_GET["start"] = 0;
         }
 
-        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
+        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]) && $database->isRateExist($_SESSION["idUser"], $_GET["id"]))
         {
             $database->insertRating($_SESSION["idUser"], $_GET["id"]);
             $database->updateWish($_SESSION["idUser"], $_GET["id"], $database->GetVisitedStateForWish($_SESSION["idUser"], $_GET["id"]), 1);
@@ -352,7 +352,7 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet d'ajouter ou de modifier sa note pour une recette
+     * permet d'ajouter ou de modifier sa note pour un appartement
      *
      * @return string
      */
@@ -373,7 +373,7 @@ class AppartementController extends Controller {
             $_GET["start"] = 0;
         }
 
-        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
+        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]) && $database->isRateExist($_SESSION["idUser"], $_GET["id"]))
         {
             $database->removeRating($_SESSION["idUser"], $_GET["id"]);
             $database->updateWish($_SESSION["idUser"], $_GET["id"], $database->GetVisitedStateForWish($_SESSION["idUser"], $_GET["id"]), 0);
@@ -448,7 +448,7 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet d'ajouter une recette
+     * permet d'ajouter un appartement
      *
      * @return string
      */
@@ -528,9 +528,9 @@ class AppartementController extends Controller {
             $appartement["appImage"] = "defaultAppartementPicture.jpg";
             $appartement["appRate"] = 0;
 
-            $database->insertAppartement($appartement); // insertion de la recette dans la base de donnée
+            $database->insertAppartement($appartement); // insertion de l'appartement dans la base de donnée
 
-            $appartement = $database->getLastAppartement(); //get la recette pour la page edit (où l'on peut ajouter une image) 
+            $appartement = $database->getLastAppartement(); //get l'appartement pour la page edit (où l'on peut ajouter une image) 
 
             $view = file_get_contents('view/page/restrictedPages/manageAppartement/editAppartement.php');
         }
@@ -548,7 +548,7 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet de modifier une recette
+     * permet de modifier un appartement
      *
      * @return string
      */
@@ -688,7 +688,7 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet de supprimer une recette
+     * permet de supprimer un appartement
      *
      * @return string
      */
@@ -749,7 +749,7 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet de rendre l'index de départ rond par rapport au nombre de page et au nombre de recette par page <etc class=""></etc>
+     * permet de rendre l'index de départ rond par rapport au nombre de page et au nombre d'appartement par page <etc class=""></etc>
      *
      * @param int $startIndex 
      * @param [type] $database
@@ -782,11 +782,11 @@ class AppartementController extends Controller {
             }
             else if ($_GET["start"] == PHP_INT_MAX)
             {
-                if ($appartementNumber%$lengthAppartement == 0) // s'il y a pil le meme nombre de recette
+                if ($appartementNumber%$lengthAppartement == 0) // s'il y a pil le meme nombre d'appartement
                 {
                     $startIndex = $appartementNumber - ($lengthAppartement - $appartementNumber%$lengthAppartement);
                 }
-                else // s'il y a plus de recette
+                else // s'il y a plus d'appartement
                 {
                     $startIndex = $appartementNumber - $appartementNumber%$lengthAppartement;
                 }

@@ -12,7 +12,7 @@
 
         echo '<span class="bg-success rounded-top d-block w-100 text-center mb-n3 pb-3"><h3>Dernier ajout !!!</h3></span>'; // bandeau vert en haut de l'image
 
-        echo '<img src="resources//image//Appartements//' . $lastAppartement["appImage"] . '" class="d-block w-100" alt="image de la dernière recette ajoutée au site">'; // à modifier en fonction des dernières recettes etc
+        echo '<img src="resources//image//Appartements//' . $lastAppartement["appImage"] . '" class="d-block w-100" alt="image de le dernier appartement ajouté au site">'; // à modifier en fonction des derniers appartements etc
         
         echo '<div class="carousel-caption d-none d-md-block bg-dark rounded-pill">';
           echo '<a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($lastAppartement['idAppartement']) . '"><h4>' . $lastAppartement["appName"] . '</h4></a>';
@@ -31,7 +31,7 @@
 
         echo '<span class="bg-danger rounded-top d-block w-100 text-center mb-n3 pb-3"><h3>Meilleure note !!!</h3></span>'; // bandeau rouge en haut de l'image
       
-        echo '<img src="resources//image//Appartements//' . $bestAppartement["appImage"] . '" class="d-block w-100" alt="image de la recette avec la meilleure note">'; // <!-- à modifier en fonction des meilleures recettes etc -->
+        echo '<img src="resources//image//Appartements//' . $bestAppartement["appImage"] . '" class="d-block w-100" alt="image de l\'appartement avec la meilleure note">'; // <!-- à modifier en fonction des meilleures appartements etc -->
         echo '<div class="carousel-caption d-none d-md-block bg-dark rounded-pill">';
           echo '<a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($bestAppartement['idAppartement']) . '"><h4>' . $bestAppartement["appName"] . '</h4></a>';
           echo '<p>ajouté le : [ ' . $bestAppartement["appDate"] . ' ]</p>';
@@ -49,7 +49,7 @@
         echo "'>";
 
         echo '<span class="bg-warning rounded-top d-block w-100 text-center mb-n3 pb-3"><h3>Appartement le plus abordable</h3></span>'; // bandeau jaune en haut de l'image
-        echo '<img src="resources//image//Appartements//' . $cheapestAppartement["appImage"] . '" class="d-block w-100" alt="image de l\'appartement le plus abordable">'; // <!-- à modifier en fonction des recettes les plus faciles etc -->
+        echo '<img src="resources//image//Appartements//' . $cheapestAppartement["appImage"] . '" class="d-block w-100" alt="image de l\'appartement le plus abordable">'; // <!-- à modifier en fonction des appartements les plus faciles etc -->
         
         echo '<div class="carousel-caption d-none d-md-block bg-dark rounded-pill">';
           echo '<div class="d-flex align-items-end flex-column" style="height: 40px;">';
@@ -147,5 +147,5 @@
     <br><br>
     <div class="text-light">
       <h1>Bienvenue sur Swedish Tortilla</h1>
-      <p>Ce site a pour but de recenser tous types de recettes. Nous vous invitions à toutes les essayer afin de les évaluer selon vos compétences en cuisine. Nous sommes tous des explorateurs des papilles gustatives.</p>
+      <p>Ce site a pour but de recenser tous types d'appartement. Nous vous invitions à toutes les essayer afin de les évaluer selon vos compétences en cuisine. Nous sommes tous des explorateurs des papilles gustatives.</p>
     </div>

@@ -1,8 +1,15 @@
+<?php
+    if(!array_key_exists("theme", $_SESSION))
+    {
+        $_SESSION['theme'] = "dark";
+    }
+?>
+
 <div class="container pb-5 pt-5">
     
     <div class="mastHead">
         
-        <nav class="navbar navbar-expand-lg fixed-top bg-dark rounded-bottom rounded-3" id="mainNav" > <!-- TODO : remettre : bg-dark (quand il n'y a plus d'erreur, ou quand le projet est terminé)-->
+        <nav class="navbar navbar-expand-lg fixed-top bg-<?php echo $_SESSION["theme"];?> rounded-bottom rounded-3" id="mainNav" > <!-- TODO : remettre : bg-dark (quand il n'y a plus d'erreur, ou quand le projet est terminé)-->
             
             <div class="container">
                 <!-- menu de base -->
@@ -57,5 +64,3 @@
         </nav>
         
     </div>
-    
-    <h3 class="text-muted pt-2">Menu de votre choix</h3>
