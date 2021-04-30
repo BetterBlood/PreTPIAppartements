@@ -317,7 +317,7 @@ class UserController extends Controller
                         $errorPngFile = false;
                         // TODO : si le temps le permet : faire la vérification de champ (ptetre faire une méthode, étant donné que l'on doit aussi l'utiliser pour l'inscription)
                         
-                        if (array_key_exists("pseudo", $_POST) && sizeof($_POST["pseudo"]) >= 3 && !$database->userExistByPseudo(htmlspecialchars($_POST["pseudo"]))) // vérifie que le pseudo est disponible
+                        if (array_key_exists("pseudo", $_POST) && strlen($_POST["pseudo"]) >= 3 && !$database->userExistByPseudo(htmlspecialchars($_POST["pseudo"]))) // vérifie que le pseudo est disponible
                         {
                             $user["usePseudo"] = htmlspecialchars($_POST["pseudo"]);
                         }
@@ -326,7 +326,7 @@ class UserController extends Controller
                             $user["usePseudo"] = $userProfile["usePseudo"];
                         }
                         
-                        if (array_key_exists("useFirstname", $_POST) )// TODO : vérification de champ basique
+                        if (array_key_exists("useFirstname", $_POST) && strlen($_POST["useFirstname"]) >= 2)// TODO : vérification de champ basique
                         {
                             $user["useFirstname"] = htmlspecialchars($_POST["useFirstname"]);
                         }
@@ -335,7 +335,7 @@ class UserController extends Controller
                             $user["useFirstname"] = $userProfile["useFirstname"];
                         }
 
-                        if (array_key_exists("useName", $_POST) )// TODO : vérification de champ basique
+                        if (array_key_exists("useName", $_POST) && strlen($_POST["useName"]) >= 2)// TODO : vérification de champ basique
                         {
                             $user["useName"] = htmlspecialchars($_POST["useName"]);
                         }
