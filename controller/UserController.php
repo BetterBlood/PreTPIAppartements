@@ -176,7 +176,7 @@ class UserController extends Controller
                 //Vérifie le connecteur
                 $array = (array) $database;
 
-                if($array["\0Database\0connector"] != NULL && $database->userExist(htmlspecialchars($_POST['username']))){
+                if($array["\0Database\0connector"] != NULL && !$database->userExist(htmlspecialchars($_POST['username']))){
                     
                     $database->insertUser($username, $firstName, $lastName, $hashed_password);
                     $_SESSION['isConnected'] = false;
