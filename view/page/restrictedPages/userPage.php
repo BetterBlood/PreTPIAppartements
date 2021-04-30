@@ -50,7 +50,7 @@
                         <input type="file" name="image" id="image" />
                         <input class="btn btn-primary mb-2" type="submit" value="Modifier" />
                         <?php
-                        if ((isset($imageEmpty) && $imageEmpty) || $errorPngFile) // TODO : comprendre pourquoi $errorPngFile n'est jamais set a true
+                        if ((isset($imageEmpty) && $imageEmpty) || $errorPngFile)
                         {
                             echo '<strong class="text-danger">l\'image séléctionnée n\'est pas valide, ou trop volumineuse.</strong>';
                         }
@@ -208,7 +208,7 @@
 
             <div class="form-group col-md-4 mb-3">
                 <label for="phone">Thème</label> 
-                <?php // TODO : faire une liste déroulante avec les thème dispo (selon database), et faire pareil pour les catégories d'appartement !!!
+                <?php // TODO : bloquer la liste pour le visionnage en !$selfpage !!!!
                     // echo '<input type="tel" class="form-control" name="profilePref" id="profilePref" placeholder="' . $userProfile["useProfilePref"] . '" ' . 'value="' . $userProfile["useProfilePref"] . '" ';
                     // if (!$selfPage)
                     // {
@@ -306,14 +306,9 @@
                     echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
                     echo '<td>' . htmlspecialchars($appartement['appCategory']) . '</td>';
                     echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
-                    if (isset($appartement["appRate"])) // TODO : modifier ça
-                    {
-                        echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
-                    }
-                    else
-                    {
-                        echo '<td>pas encore notée</td>';
-                    }
+                    
+                    echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
+                    
                     echo '<td>' . htmlspecialchars($appartement['appPrix']) . ' CHF</td>';
                     echo '<td class="text-center">' . $user["usePseudo"] . '</td>';
 

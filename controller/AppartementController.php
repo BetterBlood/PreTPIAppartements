@@ -356,7 +356,7 @@ class AppartementController extends Controller {
      *
      * @return string
      */
-    private function unrateAction() { // TODO : ne pas oublié d'update le wishlist et la list d'appartement en calculant le nouveau rating
+    private function unrateAction() {
         // Instancie le modèle et va chercher les informations
         $database = new Database();
 
