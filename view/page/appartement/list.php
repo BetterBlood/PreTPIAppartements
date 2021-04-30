@@ -54,13 +54,21 @@
 				if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détail d'une recette
 				{
 					echo '<td><a href="index.php?controller=appartement&action=list&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
-					if (!$inWish)
+					
+					if (array_key_exists("idUser", $_SESSION)) // possibilité d'ajouter à la liste d'appartement perso
 					{
-						echo '<td><a href="index.php?controller=appartement&action=addWish&id=' . $appartement["idAppartement"] .'&start=' . $startIndex . '"><img src="resources/image/icone/addIcon.png" alt="add-icon"></a></td>';
+						if (!$inWish)
+						{
+							echo '<td><a href="index.php?controller=appartement&action=addWish&id=' . $appartement["idAppartement"] .'&start=' . $startIndex . '"><img src="resources/image/icone/addIcon.png" alt="add-icon"></a></td>';
+						}
+						else
+						{
+							echo '<td><a onclick="return confirm(\'Voulez-vous vraiment retirer cet appartement de votre liste personnelle ?\')" href="index.php?controller=appartement&action=removeWish&id=' . $appartement["idAppartement"] .'&start=' . $startIndex . '"><img src="resources/image/icone/removeHouse.png" alt="add-icon"></a></td>';
+						}
 					}
 					else
 					{
-						echo '<td><a onclick="return confirm(\'Voulez-vous vraiment retirer cet appartement de votre liste personnelle ?\')" href="index.php?controller=appartement&action=removeWish&id=' . $appartement["idAppartement"] .'&start=' . $startIndex . '"><img src="resources/image/icone/removeHouse.png" alt="add-icon"></a></td>';
+						echo '<td></td>';
 					}
 				}
 				else 

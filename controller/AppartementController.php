@@ -30,15 +30,13 @@ class AppartementController extends Controller {
             $action = "listAction";
         }
         else 
-        {
-            switch($_GET["action"]) 
+        {   
+            // TODO : vérifier que les conditions sont les bonnes pour les nouvelles page ajoutée
+            switch($_GET["action"])
             {
                 case "list":
-                case "wishlist":
                 case "rate":
                 case "unrate":
-                case "addWish":
-                case "removeWish":
                     $action = $_GET["action"] . "Action";
                     break;
                     
@@ -53,6 +51,9 @@ class AppartementController extends Controller {
                     }
                     break;
 
+                case "wishlist":
+                case "addWish":
+                case "removeWish":
                 case "addAppartement":
                     if (array_key_exists("isConnected", $_SESSION) && $_SESSION["isConnected"])
                     {
@@ -113,7 +114,7 @@ class AppartementController extends Controller {
 
         if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
         {
-            if ($database->wishExtist($_SESSION["idUser"], $_GET["id"]))
+            if (array_key_exists("idUser", $_SESSION) && $database->wishExtist($_SESSION["idUser"], $_GET["id"]))
             {
                 $inWish = true;
             }
