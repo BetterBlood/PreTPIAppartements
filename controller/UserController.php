@@ -78,36 +78,48 @@ class UserController extends Controller
      * Login utilisateur
      *
      */
-    private function loginAction() 
+    private function loginAction() // TODO : modifier les header en redirection MVC !!! 
     {
         $username = htmlspecialchars($_POST['username']);
         $password = htmlspecialchars($_POST['password']);
 
-        $database = new Database();
+        $database = new Database(); // TODO : modifier la base de donnée : utilisateur avec 2 champs en plus : "useCreatedBy" et "useCreatedOn" !!!
 
         //Vérifie le connecteur
         $array = (array) $database;
-        if($array["\0Database\0connector"] != NULL){
+
+        if ($array["\0Database\0connector"] != NULL)
+        {
             $userArray = $database->getOneUser($username);
             $user = $userArray[0];
         }
 
-        if(empty($user)){
+        if (empty($user))
+        {
             $_SESSION['errorLogin'] = true;
             $_SESSION['isConnected'] = false;
+
+            error_log("Login, invalidePseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
+
             header('location: index.php?controller=user&action=loginForm');
         }
-        else if(password_verify($password, $user['usePassword'])){
+        else if (password_verify($password, $user['usePassword']))
+        {
             $_SESSION['errorLogin'] = false;
             $_SESSION['isConnected'] = true;
             $_SESSION['username'] = $user['usePseudo'];
             $_SESSION['idUser'] = $user['idUser'];
             $_SESSION['theme'] = $database->getProfileNameById($user['useProfilePref']);
+            
             header('location: index.php');
         }
-        else{
+        else
+        {
             $_SESSION['errorLogin'] = true;
             $_SESSION['isConnected'] = false;
+
+            error_log("Login, password, pseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
+            
             header('location: index.php?controller=user&action=loginForm');
         }
 
@@ -131,6 +143,11 @@ class UserController extends Controller
      */
     private function registerFormAction() 
     {
+        $error = false;
+        $errorUsername = false;
+        $errorPassword = false;
+        $errorRegister = false;
+
         $view = file_get_contents('view/page/restrictedPages/loginRegister/registerForm.php');
         
         ob_start();
@@ -146,22 +163,35 @@ class UserController extends Controller
      */
     private function registerAction()
     {
-        $error = false;
+        include_once($this->databasePath);
+        $database = new Database();
+
+        $errorRegister = false;
+        
+        $errorUsername = false;
+        $errorPassword = false;
+        
         //Vérification de l'existence des champs
-        if(key_exists("username", $_POST) && key_exists("firstName", $_POST) && key_exists("lastName", $_POST) && key_exists("password1", $_POST) && key_exists("password2", $_POST)){
+        if (key_exists("username", $_POST) && key_exists("firstName", $_POST) && key_exists("lastName", $_POST) && key_exists("password1", $_POST) && key_exists("password2", $_POST))
+        {
             //Vérification des champs
-            if ((htmlspecialchars($_POST['username']) == "" || !preg_match('/^[A-Za-z\d]*(-[A-Za-z\d]*)*$/',htmlspecialchars($_POST['username']))))
+            if ((htmlspecialchars($_POST['username']) == "" 
+                || !preg_match('/^[A-Za-z\d]*(-[A-Za-z\d]*)*$/',htmlspecialchars($_POST['username']))) 
+                || $database->userExistByPseudo(htmlspecialchars($_POST['username'])))
             {
-                $error = true;
-                echo 'Nom dutilisateur non conforme<br>';
-            }
-            if (($_POST['password1'] != $_POST['password2']))
-            {
-                $error = true;
-                echo 'Les mots de passe ne sont pas identiques<br>';
+                $errorRegister = true;
+                $errorUsername = true;
+                error_log("Register, pseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
             }
 
-            if($error == false)
+            if (($_POST['password1'] != $_POST['password2']))
+            {
+                $errorRegister = true;
+                $errorPassword = true;
+                error_log("Register, password \t\t\t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
+            }
+
+            if ($errorRegister == false)
             {
                 //TODO : si le temps le permet : vérification
                 $username = htmlspecialchars($_POST['username']);
@@ -170,14 +200,12 @@ class UserController extends Controller
                 $password = htmlspecialchars($_POST['password1']);
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
-                include_once($this->databasePath);
-                $database = new Database();
 
                 //Vérifie le connecteur
                 $array = (array) $database;
 
-                if($array["\0Database\0connector"] != NULL && !$database->userExist(htmlspecialchars($_POST['username']))){
-                    
+                if ($array["\0Database\0connector"] != NULL)
+                {
                     $database->insertUser($username, $firstName, $lastName, $hashed_password);
                     $_SESSION['isConnected'] = false;
                     //$_SESSION['username'] = $username;
@@ -187,9 +215,24 @@ class UserController extends Controller
                 }
                 else
                 {
-                    $error = true;
-                    header('location: index.php'); // TODO : ajouter un message d'erreur pour l'utilisateur (pseudo déjà prit) !!!
+                    $errorRegister = true;
+                    error_log("Register, base de donnée \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
                 }
+            }
+            else
+            {
+                $errorRegister = true;
+            }
+
+            if ($errorRegister)
+            {
+                $view = file_get_contents('view/page/restrictedPages/loginRegister/registerForm.php');
+        
+                ob_start();
+                eval('?>' . $view);
+                $content = ob_get_clean();
+
+                return $content;
             }
         }
     }
