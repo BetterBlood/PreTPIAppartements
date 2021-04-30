@@ -30,15 +30,13 @@ class AppartementController extends Controller {
             $action = "listAction";
         }
         else 
-        {
-            switch($_GET["action"]) 
+        {   
+            // TODO : vérifier que les conditions sont les bonnes pour les nouvelles page ajoutée
+            switch($_GET["action"])
             {
                 case "list":
-                case "wishlist":
                 case "rate":
                 case "unrate":
-                case "addWish":
-                case "removeWish":
                     $action = $_GET["action"] . "Action";
                     break;
                     
@@ -53,6 +51,9 @@ class AppartementController extends Controller {
                     }
                     break;
 
+                case "wishlist":
+                case "addWish":
+                case "removeWish":
                 case "addAppartement":
                     if (array_key_exists("isConnected", $_SESSION) && $_SESSION["isConnected"])
                     {
@@ -113,7 +114,7 @@ class AppartementController extends Controller {
 
         if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
         {
-            if ($database->wishExtist($_SESSION["idUser"], $_GET["id"]))
+            if (array_key_exists("idUser", $_SESSION) && $database->wishExtist($_SESSION["idUser"], $_GET["id"]))
             {
                 $inWish = true;
             }
@@ -455,170 +456,84 @@ class AppartementController extends Controller {
     private function addAppartementAction() {
         $database = new Database();
         
-        $firstPart = true;
+        $formError = false;
 
-        if (isset($_POST["appartementCreation1"]))
+        if (isset($_POST["appartementCreation1"])) // vérification de champ
         {
-            $firstPart = false;
-            $firstPartError = false;
             $_SESSION["appartement"] = array();
-            $_SESSION["appartement"]["recName"] = "";
-            $_SESSION["appartement"]["recCategory"] = "";
-            $_SESSION["appartement"]["recPrepTime"] = -1;
-            $_SESSION["appartement"]["recDifficulty"] = -1;
-            $_SESSION["appartement"]["recDescription"] = "";
+            $_SESSION["appartement"]["appName"] = "";
+            $_SESSION["appartement"]["appDescription"] = "";
+            $_SESSION["appartement"]["appCategory"] = "";
+            $_SESSION["appartement"]["appSurface"] = -1;
+            $_SESSION["appartement"]["appPrix"] = -1;
             
-            
-            if (array_key_exists("recName", $_POST) && trim($_POST["recName"]) != "" && strlen($_POST["recName"]) <= 100 && strlen($_POST["recName"]) > 1) // 2 charactère minimum
+            if (array_key_exists("appName", $_POST) && trim($_POST["appName"]) != "" && strlen($_POST["appName"]) <= 100 && strlen($_POST["appName"]) > 1) // 2 charactère minimum
             {
-                $_SESSION["appartement"]["recName"] = $_POST["recName"];
+                $_SESSION["appartement"]["appName"] = $_POST["appName"];
             }
             else
             {
-                $firstPart = true;
-                $firstPartError = true;
+                $formError = true;
             }
 
-            if (array_key_exists("recCategory", $_POST) && trim($_POST["recCategory"]) != "" && strlen($_POST["recCategory"]) <= 100 && strlen($_POST["recCategory"]) > 4) // 5 charactère minimum
+            if (array_key_exists("appCategory", $_POST) && trim($_POST["appCategory"]) != "" && strlen($_POST["appCategory"]) <= 100 && strlen($_POST["appCategory"]) > 4) // 5 charactère minimum
             {
-                $_SESSION["appartement"]["recCategory"] = $_POST["recCategory"];
+                $_SESSION["appartement"]["appCategory"] = $_POST["appCategory"];
             }
             else
             {
-                $firstPart = true;
-                $firstPartError = true;
+                $formError = true;
             }
 
-            if (array_key_exists("recPrepTime", $_POST) && trim($_POST["recPrepTime"]) != "" && (int)$_POST["recPrepTime"] >= 10)
+            if (array_key_exists("appSurface", $_POST) && trim($_POST["appSurface"]) != "" && (int)$_POST["appSurface"] >= 10) // TODO : Définir une surface minimum plausible
             {
-                $_SESSION["appartement"]["recPrepTime"] = $_POST["recPrepTime"];
+                $_SESSION["appartement"]["appSurface"] = $_POST["appSurface"];
             }
             else
             {
-                $firstPart = true;
-                $firstPartError = true;
+                $formError = true;
             }
 
-            if (array_key_exists("recDifficulty", $_POST) && trim($_POST["recDifficulty"]) != "" && (int)$_POST["recDifficulty"] >= 1 && (int)$_POST["recDifficulty"] <= 5)
+            if (array_key_exists("appPrix", $_POST) && trim($_POST["appPrix"]) != "" && (int)$_POST["appPrix"] >= 1 && (int)$_POST["appPrix"] >= 10) // TODO : Définir un prix minimum plausible
             {
-                $_SESSION["appartement"]["recDifficulty"] = $_POST["recDifficulty"];
+                $_SESSION["appartement"]["appPrix"] = $_POST["appPrix"];
             }
             else
             {
-                $firstPart = true;
-                $firstPartError = true;
+                $formError = true;
             }
 
-            if (array_key_exists("recDescription", $_POST) && trim($_POST["recDescription"]) != "" && strlen($_POST["recDescription"]) <= 255 && strlen($_POST["recDescription"]) > 4) // 5 charactère minimum
+            if (array_key_exists("appDescription", $_POST) && trim($_POST["appDescription"]) != "" && strlen($_POST["appDescription"]) <= 255 && strlen($_POST["appDescription"]) > 4) // 5 charactère minimum
             {
-                $_SESSION["appartement"]["recDescription"] = $_POST["recDescription"];
+                $_SESSION["appartement"]["appDescription"] = $_POST["appDescription"];
             }
             else
             {
-                $firstPart = true;
-                $firstPartError = true;
+                $formError = true;
             }
-            
-            
         }
-
-        if (isset($_POST["appartementCreation2"]))
+        
+        if (isset($_POST["appartementCreation1"]) && !$formError)
         {
-            $firstPart = false;
-            $secondPartError = false;
             $appartement = array();
 
             $appartement["idUser"] = $_SESSION["idUser"];
-            $appartement["recName"] = $_SESSION["appartement"]["recName"];
-            $appartement["recCategory"] = $_SESSION["appartement"]["recCategory"];
-            $appartement["recPrepTime"] = (int)$_SESSION["appartement"]["recPrepTime"];
-            $appartement["recDifficulty"] = (int)$_SESSION["appartement"]["recDifficulty"];
-            $appartement["recDescription"] = $_SESSION["appartement"]["recDescription"];
-
-            $ingredients = "";
-
-            if (isset($_POST["numberOfIngredients"]))
-            {
-                $numberOfIngredients = $_POST["numberOfIngredients"];
-
-                for ($i = 0; $i < $numberOfIngredients; $i++)
-                {
-                    if (isset($_POST["nbrIngredient" . ($i + 1)]) && trim($_POST["nbrIngredient" . ($i + 1)]) != "" && isset($_POST["ingredient" . ($i + 1)]) && strlen(trim($_POST["ingredient" . ($i + 1)])) >= 1)
-                    {
-                        $ingredients .= $_POST["nbrIngredient" . ($i + 1)] . ' x '; // TODO : [pas obligatoire] on pourrait faire une modif ici (mais il faudrait ajouter un champ au form (unity) et faire un if pour savoir quelle unitée est séléctionnée et faire une autre table ? => bof....)
-                    }
-                    else
-                    {
-                        continue;
-                    }
-
-                    if (isset($_POST["ingredient" . ($i + 1)]) && trim($_POST["ingredient" . ($i + 1)]) != "")
-                    {
-                        $ingredients .= $_POST["ingredient" . ($i + 1)];
-
-                        if ($i != $numberOfIngredients - 1)
-                        {
-                            $ingredients .= ',';
-                        }
-                    }
-                }
-
-                if (trim($ingredients) == "" || empty($ingredients) || strlen($ingredients) > 255 || strlen($ingredients) < 5) // "1 x n" 5 charactères minimum
-                {
-                    $secondPartError = true;
-                }
-            }
-            
-            $appartement["recIngredientList"] = $ingredients;
-
-
-            $preparationStep = "";
-
-            if (isset($_POST["numberOfstep"]))
-            {
-                $numberOfstep = $_POST["numberOfstep"];
-
-                for ($i = 0; $i < $numberOfstep; $i++)
-                {
-
-                    if (isset($_POST["step" . ($i + 1)]))
-                    {
-                        $preparationStep .= $_POST["step" . ($i + 1)];
-
-                        if ($i != $numberOfstep - 1)
-                        {
-                            $preparationStep .= ',';
-                        }
-                    }
-                }
-
-                if (trim($preparationStep) == "" || empty($preparationStep) || strlen($preparationStep) > 255 || strlen($preparationStep) < 5) // 5 aussi comme minimum (c'est arbitraire)
-                {
-                    $secondPartError = true;
-                }
-            }
-            
-            $appartement["recPreparation"] = $preparationStep;
+            $appartement["appName"] = $_SESSION["appartement"]["appName"];
+            $appartement["appCategory"] = $_SESSION["appartement"]["appCategory"];
+            $appartement["appSurface"] = (int)$_SESSION["appartement"]["appSurface"];
+            $appartement["appPrix"] = (int)$_SESSION["appartement"]["appPrix"];
+            $appartement["appDescription"] = $_SESSION["appartement"]["appDescription"];
             
             $date = $database->getDate();
-            $appartement["recDate"] = $date["currentTime"];
-            $appartement["recImage"] = "defaultAppartementPicture.jpg";
+            $appartement["appDate"] = $date["currentTime"];
+            $appartement["appImage"] = "defaultAppartementPicture.jpg";
+            $appartement["appRate"] = 0;
 
-            if (!$secondPartError)
-            {
-                $database->insertAppartement($appartement); // insertion de la recette dans la base de donnée
-            }
+            $database->insertAppartement($appartement); // insertion de la recette dans la base de donnée
 
-            $appartement = $database->getLastAppartement(); //get la recette pour la page edit (où l'on peut ajouter une image) (on a besoin de l'id)
+            $appartement = $database->getLastAppartement(); //get la recette pour la page edit (où l'on peut ajouter une image) 
 
-            if (!$secondPartError)
-            {
-                $view = file_get_contents('view/page/restrictedPages/manageAppartement/editAppartement.php');
-            }
-            else
-            {
-                $view = file_get_contents('view/page/restrictedPages/manageAppartement/addAppartement.php');
-            }
+            $view = file_get_contents('view/page/restrictedPages/manageAppartement/editAppartement.php');
         }
         else
         {
@@ -644,14 +559,15 @@ class AppartementController extends Controller {
         $appartement = $database->getOneAppartement($_GET["id"]);
 
         $imageEmpty = false;
+        $formError = false;
 
         if (array_key_exists("fileUpdate", $_POST)) // modification de l'image
         {
             if(!empty($_FILES["image"]["name"]) && $this->extensionOk($_FILES["image"]["name"])) // TODO : si le temps le permet : faire de meilleures vérifications (ex: nom de fichier trop long... )
             {
-                if ($appartement["recImage"] != "defaultAppartementPicture.jpg" && file_exists("resources/image/Appartements/" . $appartement["recImage"]))
+                if ($appartement["appImage"] != "defaultAppartementPicture.jpg" && file_exists("resources/image/Appartements/" . $appartement["appImage"]))
                 {
-                    unlink("resources/image/Appartements/" . $appartement["recImage"]); // suppression de l'ancienne image
+                    unlink("resources/image/Appartements/" . $appartement["appImage"]); // suppression de l'ancienne image
                 }
                 
                 $image = "";
@@ -674,17 +590,92 @@ class AppartementController extends Controller {
                         break;
                 }
 
-                
-
                 imagejpeg($image, "resources/image/Appartements/" . $imgName, 75); // compression de l'image
                 //move_uploaded_file($_FILES["image"]["tmp_name"], "resources/image/Appartements/" . $imgName);
-                $appartement["recImage"] = $imgName;
+                $appartement["appImage"] = $imgName;
                 
                 $database->editAppartement($appartement); // modification du nom dans la database
             }
             else
             {
                 $imageEmpty = true;
+            }
+        }
+
+        if (isset($_POST["appartementEdit"]))
+        {
+            $_SESSION["appartement"] = array();
+            $_SESSION["appartement"]["appName"] = "";
+            $_SESSION["appartement"]["appDescription"] = "";
+            $_SESSION["appartement"]["appCategory"] = "";
+            $_SESSION["appartement"]["appSurface"] = -1;
+            $_SESSION["appartement"]["appPrix"] = -1;
+            
+            if (array_key_exists("appName", $_POST) && trim($_POST["appName"]) != "" && strlen($_POST["appName"]) <= 100 && strlen($_POST["appName"]) > 1) // 2 charactère minimum
+            {
+                $_SESSION["appartement"]["appName"] = $_POST["appName"];
+            }
+            else
+            {
+                $formError = true;
+            }
+
+            if (array_key_exists("appCategory", $_POST) && trim($_POST["appCategory"]) != "" && strlen($_POST["appCategory"]) <= 100 && strlen($_POST["appCategory"]) > 4) // 5 charactère minimum
+            {
+                $_SESSION["appartement"]["appCategory"] = $_POST["appCategory"];
+            }
+            else
+            {
+                $formError = true;
+            }
+
+            if (array_key_exists("appSurface", $_POST) && trim($_POST["appSurface"]) != "" && (int)$_POST["appSurface"] >= 10) // TODO : Définir une surface minimum plausible
+            {
+                $_SESSION["appartement"]["appSurface"] = $_POST["appSurface"];
+            }
+            else
+            {
+                $formError = true;
+            }
+
+            if (array_key_exists("appPrix", $_POST) && trim($_POST["appPrix"]) != "" && (int)$_POST["appPrix"] >= 1 && (int)$_POST["appPrix"] >= 10) // TODO : Définir un prix minimum plausible
+            {
+                $_SESSION["appartement"]["appPrix"] = $_POST["appPrix"];
+            }
+            else
+            {
+                $formError = true;
+            }
+
+            if (array_key_exists("appDescription", $_POST) && trim($_POST["appDescription"]) != "" && strlen($_POST["appDescription"]) <= 255 && strlen($_POST["appDescription"]) > 4) // 5 charactère minimum
+            {
+                $_SESSION["appartement"]["appDescription"] = $_POST["appDescription"];
+            }
+            else
+            {
+                $formError = true;
+            }
+
+            if (!$formError)
+            {
+                $appartementTMP = array();
+
+                $appartementTMP["idAppartement"] = $appartement["idAppartement"];
+
+                $appartementTMP["idUser"] = $_SESSION["idUser"];
+                $appartementTMP["appName"] = $_SESSION["appartement"]["appName"];
+                $appartementTMP["appCategory"] = $_SESSION["appartement"]["appCategory"];
+                $appartementTMP["appSurface"] = (int)$_SESSION["appartement"]["appSurface"];
+                $appartementTMP["appPrix"] = (int)$_SESSION["appartement"]["appPrix"];
+                $appartementTMP["appDescription"] = $_SESSION["appartement"]["appDescription"];
+                
+                $appartementTMP["appDate"] = $appartement["appDate"];
+                $appartementTMP["appImage"] = $appartement["appImage"];
+                $appartementTMP["appRate"] = 0;
+
+                $database->editAppartement($appartementTMP); // modification de l'appartement dans la base de donnée
+
+                $appartement = $database->getOneAppartement($_GET["id"]);
             }
         }
 

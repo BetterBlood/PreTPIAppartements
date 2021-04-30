@@ -917,6 +917,29 @@ class Database {
     }
 
     /**
+     * vérifie dans la database si l'utilisateur existe
+     *
+     * @param string $usePseudo
+     * @return bool
+     */
+    public function userExistByPseudo($usePseudo)
+    {
+        $req = $this->queryPrepareExecute('SELECT * FROM t_user', null);// appeler la méthode pour executer la requète
+
+        $users = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
+
+        foreach($users as $user)
+        {
+            if ($user["usePseudo"] == $usePseudo)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * permet de modifier un utilisateur
      *
      * @param array $user
@@ -982,19 +1005,24 @@ class Database {
                     'type' => PDO::PARAM_STR
                 ),
                 5 => array(
-                    'marker' => ':useTelephone',
-                    'input' => $user["useTelephone"],
+                    'marker' => ':usePhone',
+                    'input' => $user["usePhone"],
                     'type' => PDO::PARAM_STR
                 ),
                 6 => array(
                     'marker' => ':id',
                     'input' => $user["idUser"],
                     'type' => PDO::PARAM_INT
+                ),
+                7 => array(
+                    'marker' => ':useProfilePref',
+                    'input' => $user["useProfilePref"],
+                    'type' => PDO::PARAM_INT
                 )
             ); 
 
             $query =   'UPDATE t_user SET 
-                        usePseudo = :usePseudo, useFirstname = :useFirstname, useName = :useName, useMail = :useMail, useTelephone = :useTelephone
+                        usePseudo = :usePseudo, useFirstname = :useFirstname, useName = :useName, useMail = :useMail, usePhone = :usePhone, useProfilePref = :useProfilePref
                         WHERE idUser = :id';
         }
 
@@ -1002,5 +1030,48 @@ class Database {
 
         $this->unsetData($req);
     }
+
+
+
+
+
+
+    //profile section
+
+    public function profileExist($idProfile)
+    {
+        $req = $this->queryPrepareExecute('SELECT * FROM t_profile WHERE idProfile = ' . $idProfile, null);
+
+        $profiles = $this->formatData($req);
+
+        $this->unsetData($req);
+
+        return $profiles[0];
+    }
+
+    public function getAllProfiles()
+    { 
+        $req = $this->queryPrepareExecute('SELECT * FROM t_profile' , null);// appeler la méthode pour executer la requète
+
+        $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
+
+        $this->unsetData($req);
+
+        return $appartements;// retour tous les recettes
+    }
+
+    public function getProfileNameById($idProfile)
+    {
+        $req = $this->queryPrepareExecute('SELECT * FROM t_profile WHERE idProfile = ' . $idProfile, null);
+
+        $profiles = $this->formatData($req);
+
+        $this->unsetData($req);
+
+        return $profiles[0]["proName"];
+    }
+
+
+
 }
 ?>
