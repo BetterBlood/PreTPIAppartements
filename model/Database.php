@@ -219,7 +219,7 @@ class Database {
      *
      * @return array
      */
-    public function getBestAppartement() // TODO : modifier pour aller chercher le rating pour calculer la note !
+    public function getBestAppartement()
     {
         $querry = 'SELECT * FROM t_appartement ORDER BY appRate DESC LIMIT 1';
 
