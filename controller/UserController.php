@@ -99,7 +99,7 @@ class UserController extends Controller
             $_SESSION['errorLogin'] = true;
             $_SESSION['isConnected'] = false;
 
-            error_log("Login, invalidePseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
+            error_log("Login, invalidePseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/logs/errors/errorLogTest.log");
 
             header('location: index.php?controller=user&action=loginForm');
         }
@@ -111,6 +111,8 @@ class UserController extends Controller
             $_SESSION['idUser'] = $user['idUser'];
             $_SESSION['theme'] = $database->getProfileNameById($user['useProfilePref']);
             
+            error_log("Login Successfully, pseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/logs/activity.log");
+
             header('location: index.php');
         }
         else
@@ -118,7 +120,7 @@ class UserController extends Controller
             $_SESSION['errorLogin'] = true;
             $_SESSION['isConnected'] = false;
 
-            error_log("Login, password, pseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
+            error_log("Login, password, pseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/logs/errors/errorLogTest.log");
             
             header('location: index.php?controller=user&action=loginForm');
         }
@@ -132,6 +134,10 @@ class UserController extends Controller
      */
     private function logoutAction() 
     {
+        $database = new Database();
+
+        error_log("Logout Successfully, pseudo : {" . htmlspecialchars($_SESSION["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/logs/activity.log");
+
         session_destroy();
         header('location: index.php');
     }
@@ -210,6 +216,9 @@ class UserController extends Controller
                     $_SESSION['isConnected'] = false;
                     //$_SESSION['username'] = $username;
                     //$_SESSION['idUser'] = $user['idUser']; // l'id n'existe pas puisque il n'y a pas de get du dernier user ajouter a la database
+
+                    error_log("Register Successfully, pseudo : {" . htmlspecialchars($username) . "} \t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/logs/activity.log");
+
                     header('location: index.php'); // redirection vers l'index
                     //rediriger vers une page de confirmation/erreur
                 }
