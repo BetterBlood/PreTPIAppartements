@@ -213,10 +213,10 @@ class UserController extends Controller
         $imageEmpty = false;
         $errorPngFile = true;
 
-        if (array_key_exists("idUser", $_GET) && $database->userExist($_GET["idUser"]))
+        if (array_key_exists("idUser", $_GET) && $database->userExist(htmlspecialchars($_GET["idUser"])))
         {
-            $appartements = $database->getAppartementsByUserId($_GET["idUser"]);
-            $userProfile = $database->getOneUserById($_GET["idUser"]);
+            $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]));
+            $userProfile = $database->getOneUserById(htmlspecialchars($_GET["idUser"]));
             $view = file_get_contents('view/page/restrictedPages/userPage.php');
             $size = "";
 
@@ -317,23 +317,59 @@ class UserController extends Controller
                         $errorPngFile = false;
                         // TODO : si le temps le permet : faire la vérification de champ (ptetre faire une méthode, étant donné que l'on doit aussi l'utiliser pour l'inscription)
                         
-                        $user["usePseudo"] = $_POST["pseudo"];
-                        // TODO : vérifier que le pseudo est disponible
+                        if (array_key_exists("pseudo", $_POST) && sizeof($_POST["pseudo"]) >= 3 && !$database->userExistByPseudo(htmlspecialchars($_POST["pseudo"]))) // vérifie que le pseudo est disponible
+                        {
+                            $user["usePseudo"] = htmlspecialchars($_POST["pseudo"]);
+                        }
+                        else
+                        {
+                            $user["usePseudo"] = $userProfile["usePseudo"];
+                        }
+                        
+                        if (array_key_exists("useFirstname", $_POST) )// TODO : vérification de champ basique
+                        {
+                            $user["useFirstname"] = htmlspecialchars($_POST["useFirstname"]);
+                        }
+                        else
+                        {
+                            $user["useFirstname"] = $userProfile["useFirstname"];
+                        }
 
-                        $user["useFirstname"] = $_POST["useFirstname"];
-                        // TODO : vérification de champ basique
+                        if (array_key_exists("useName", $_POST) )// TODO : vérification de champ basique
+                        {
+                            $user["useName"] = htmlspecialchars($_POST["useName"]);
+                        }
+                        else
+                        {
+                            $user["useName"] = $userProfile["useName"];
+                        }
 
-                        $user["useName"] = $_POST["useName"];
-                        // TODO : vérification de champ basique
+                        if (array_key_exists("mail", $_POST) ) // TODO : vérification de champ basique + mail
+                        {
+                            $user["useMail"] = htmlspecialchars($_POST["mail"]);
+                        }
+                        else
+                        {
+                            $user["useMail"] = $userProfile["useMail"];
+                        }
 
-                        $user["useMail"] = $_POST["mail"];
-                        // TODO : vérification de champ basique + mail
+                        if (array_key_exists("phone", $_POST) ) // TODO : vérification de champ basique + téléphone
+                        {
+                            $user["usePhone"] = htmlspecialchars($_POST["phone"]);
+                        }
+                        else
+                        {
+                            $user["usePhone"] = $userProfile["usePhone"];
+                        }
 
-                        $user["usePhone"] = $_POST["phone"];
-                        // TODO : vérification de champ basique + téléphone
-
-                        $user["useProfilePref"] = $_POST["profilePref"];
-                        // TODO : vérification de champ basique + vérifier que c'est un id dispo de t_profil
+                        if (array_key_exists("profilePref", $_POST) && $_POST["profilePref"] > 0 && $database->profileExist(htmlspecialchars($_POST["profilePref"]))) // TODO : vérification de champ basique + vérifier que c'est un id dispo de t_profil
+                        {
+                            $user["useProfilePref"] = htmlspecialchars($_POST["profilePref"]);
+                        }
+                        else
+                        {
+                            $user["useProfilePref"] = $userProfile["useProfilePref"];
+                        }
                     }
 
                     if (!$passwordModifFailed && !$imageEmpty && !$errorPngFile) // NOTE : (à vérifier à la fin du projet) ajouter les autre erreur ici afin que cela ne modifie pas la database s'il y a une erreur de form
