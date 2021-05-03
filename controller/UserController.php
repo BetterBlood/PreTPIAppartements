@@ -84,7 +84,7 @@ class UserController extends Controller
         $username = htmlspecialchars($_POST['username']);
         $password = htmlspecialchars($_POST['password']);
 
-        $database = new Database(); // TODO : modifier la base de donnée : utilisateur avec 2 champs en plus : "useCreatedBy" et "useCreatedOn" !!!
+        $database = new Database();
 
         //Vérifie le connecteur
         $array = (array) $database;
