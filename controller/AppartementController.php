@@ -200,6 +200,7 @@ class AppartementController extends Controller {
         $startIndex = 0;
         $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre d'appartements affichés'
         $_SESSION["appartementsPerPage"] = $lengthAppartement;
+        $inWish = false;
 
         if (array_key_exists("start", $_GET) && $_GET["start"] > 0) // si le paramettre de start n'est pas négatif
         {
@@ -213,15 +214,16 @@ class AppartementController extends Controller {
         if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
         {
             $database->insertWish($_SESSION["idUser"], $_GET["id"]);
-        }
-
-        $inWish = false;
-
-        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
-        {
+            error_log("InsertWish, pseudo : " . htmlspecialchars($_SESSION["username"]) . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/wishLists.log");
+            
             if ($database->wishExtist($_SESSION["idUser"], $_GET["id"]))
             {
                 $inWish = true;
+            }
+            else
+            {
+                $inWish = false;
+                error_log("InsertWish, pseudo : " . htmlspecialchars($_SESSION["username"]) . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");                
             }
         }
 
@@ -267,6 +269,7 @@ class AppartementController extends Controller {
         if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
         {
             $database->removeWish($_SESSION["idUser"], $_GET["id"]);
+            error_log("RemoveWish, pseudo : " . htmlspecialchars($_SESSION["username"]) . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/wishLists.log");
         }
 
         $inWish = false;
@@ -326,11 +329,13 @@ class AppartementController extends Controller {
             $_GET["start"] = 0;
         }
 
-        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]) && $database->isRateExist($_SESSION["idUser"], $_GET["id"]))
+        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]) && !$database->isRateExist($_SESSION["idUser"], $_GET["id"]))
         {
             $database->insertRating($_SESSION["idUser"], $_GET["id"]);
             $database->updateWish($_SESSION["idUser"], $_GET["id"], $database->GetVisitedStateForWish($_SESSION["idUser"], $_GET["id"]), 1);
             $database->updateAppartementRate($_GET["id"]);
+
+            error_log("RateAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");            
         }
 
         $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
@@ -378,6 +383,7 @@ class AppartementController extends Controller {
             $database->removeRating($_SESSION["idUser"], $_GET["id"]);
             $database->updateWish($_SESSION["idUser"], $_GET["id"], $database->GetVisitedStateForWish($_SESSION["idUser"], $_GET["id"]), 0);
             $database->updateAppartementRate($_GET["id"]);
+            error_log("UnrateAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");            
         }
 
         $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
@@ -529,14 +535,19 @@ class AppartementController extends Controller {
             $appartement["appRate"] = 0;
 
             $database->insertAppartement($appartement); // insertion de l'appartement dans la base de donnée
+            $appartement = $database->getLastAppartement(); //get l'appartement pour la page edit (où l'on peut ajouter une image)
 
-            $appartement = $database->getLastAppartement(); //get l'appartement pour la page edit (où l'on peut ajouter une image) 
-
+            error_log("AddAppartement, pseudo : " . htmlspecialchars($_SESSION["username"]) . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");
             $view = file_get_contents('view/page/restrictedPages/manageAppartement/editAppartement.php');
         }
         else
         {
             $view = file_get_contents('view/page/restrictedPages/manageAppartement/addAppartement.php');
+            
+            if ($formError)
+            {
+                error_log("AddAppartement, pseudo : " . htmlspecialchars($_SESSION["username"]) . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
+            }
         }
         
 
@@ -594,10 +605,12 @@ class AppartementController extends Controller {
                 $appartement["appImage"] = $imgName;
                 
                 $database->editAppartement($appartement); // modification du nom dans la database
+                error_log("EditAppartement Image, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");
             }
             else
             {
                 $imageEmpty = true;
+                error_log("EditAppartement Image, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
             }
         }
 
@@ -673,8 +686,12 @@ class AppartementController extends Controller {
                 $appartementTMP["appRate"] = 0;
 
                 $database->editAppartement($appartementTMP); // modification de l'appartement dans la base de donnée
-
+                error_log("AddAppartement Données, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");
                 $appartement = $database->getOneAppartement($_GET["id"]);
+            }
+            else
+            {
+                error_log("AddAppartement Données, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/erroLogTest.log");
             }
         }
 
@@ -707,6 +724,7 @@ class AppartementController extends Controller {
             if ($appartement["idUser"] == $_SESSION["idUser"])
             {
                 $database->deleteAppartement($_GET["id"]); // suppression dans la base de donnée
+                error_log("RemoveAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");
             }
         }
 

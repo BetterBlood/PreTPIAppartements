@@ -188,14 +188,14 @@ class UserController extends Controller
             {
                 $errorRegister = true;
                 $errorUsername = true;
-                error_log("Register, pseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
+                error_log("Register, pseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
             }
 
             if (($_POST['password1'] != $_POST['password2']))
             {
                 $errorRegister = true;
                 $errorPassword = true;
-                error_log("Register, password \t\t\t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
+                error_log("Register, password \t\t\t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
             }
 
             if ($errorRegister == false)
@@ -226,7 +226,7 @@ class UserController extends Controller
                 else
                 {
                     $errorRegister = true;
-                    error_log("Register, base de donnée \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
+                    error_log("Register, base de donnée \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                 }
             }
             else
