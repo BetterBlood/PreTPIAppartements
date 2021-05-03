@@ -32,12 +32,13 @@ class UserController extends Controller
             {
                 case "loginForm":
                 case "login":
-                case "logout":
+                case "logout": // vérifier que le logout n'est pas possible si on n'est pas connécté, mais bon ça n'a pas d'impacte donc pas important
                 case "registerForm":
                 case "register":
                     $action = $_GET['action'] . "Action";
                     break;
 
+                case "showHideAppartement":
                 case "profile":
                     if (array_key_exists("idUser", $_GET) && $database->userExist($_GET["idUser"]))
                     {
@@ -83,7 +84,7 @@ class UserController extends Controller
         $username = htmlspecialchars($_POST['username']);
         $password = htmlspecialchars($_POST['password']);
 
-        $database = new Database(); // TODO : modifier la base de donnée : utilisateur avec 2 champs en plus : "useCreatedBy" et "useCreatedOn" !!!
+        $database = new Database();
 
         //Vérifie le connecteur
         $array = (array) $database;
@@ -187,14 +188,14 @@ class UserController extends Controller
             {
                 $errorRegister = true;
                 $errorUsername = true;
-                error_log("Register, pseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
+                error_log("Register, pseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
             }
 
             if (($_POST['password1'] != $_POST['password2']))
             {
                 $errorRegister = true;
                 $errorPassword = true;
-                error_log("Register, password \t\t\t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
+                error_log("Register, password \t\t\t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
             }
 
             if ($errorRegister == false)
@@ -225,7 +226,7 @@ class UserController extends Controller
                 else
                 {
                     $errorRegister = true;
-                    error_log("Register, base de donnée \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/errors/errorLogTest.log");
+                    error_log("Register, base de donnée \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                 }
             }
             else
@@ -268,7 +269,6 @@ class UserController extends Controller
 
         if (array_key_exists("idUser", $_GET) && $database->userExist(htmlspecialchars($_GET["idUser"])))
         {
-            $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]));
             $userProfile = $database->getOneUserById(htmlspecialchars($_GET["idUser"]));
             $view = file_get_contents('view/page/restrictedPages/userPage.php');
             $size = "";
@@ -277,6 +277,7 @@ class UserController extends Controller
             if (array_key_exists("idUser", $_SESSION) && $_SESSION["idUser"] == $_GET["idUser"])
             {
                 $selfPage = true;
+                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage);
 
                 if (isset($_POST) && !empty($_POST))
                 {
@@ -284,7 +285,7 @@ class UserController extends Controller
                     $user["idUser"] = $_SESSION["idUser"];
                     $errorPngFile = false;
 
-                    if (array_key_exists("fileUpdate", $_POST)) // form pour update l'image
+                    if (array_key_exists("fileUpdate", $_POST)) // form pour update l'image // TODO : vérifier le MIME type !!!!
                     {
                         if (!empty($_FILES["image"]["name"]) && $_FILES["image"]["name"] != "" && $this->extensionOk($_FILES["image"]["name"])) // vérifie qu'il y a bien un fichier de séléctionné
                         {
@@ -332,17 +333,22 @@ class UserController extends Controller
                                 }
 
                                 imagejpeg($image, "resources/image/Users/" . $imgName, 75); // compression de l'image 
-
+                                error_log("User, updateImage, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
                                 //move_uploaded_file($_FILES["image"]["tmp_name"], "resources/image/Users/" . $imgName);
 
                                 $userProfile["useImage"] = $imgName;
                                 $user["useImage"] = $imgName;
+                            }
+                            else
+                            {
+                                error_log("User, image convertion, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                             }
                         }
                         else 
                         {
                             $imageEmpty = true;
                             $errorPngFile = false;
+                            error_log("User, image vide, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                         }
                     }
                     else if (array_key_exists("modifPasswordForm", $_POST)) // gère la modification du mot de passe
@@ -354,15 +360,18 @@ class UserController extends Controller
                             if ($_POST["usePassword"] === $_POST["confirmePassword"]) // TODO : si le temps le permet : ajouter des validation pour le mot de passe
                             {
                                 $user["usePassword"] = password_hash($_POST["usePassword"], PASSWORD_DEFAULT);
+                                error_log("User, passwordModif, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");                                
                             }
                             else
                             {
                                 $passwordModifFailed = true;
+                                error_log("User, passwordModif [not equal], idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                             }
                         }
                         else
                         {
                             $passwordModifFailed = true;
+                            error_log("User, passwordModif [empty], idUser : " . $_SESSION["idUser"] . " \t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                         }
                     }
                     else 
@@ -423,12 +432,16 @@ class UserController extends Controller
                         {
                             $user["useProfilePref"] = $userProfile["useProfilePref"];
                         }
+
+                        error_log("User, userModif, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
                     }
 
                     if (!$passwordModifFailed && !$imageEmpty && !$errorPngFile) // NOTE : (à vérifier à la fin du projet) ajouter les autre erreur ici afin que cela ne modifie pas la database s'il y a une erreur de form
                     {
                         $modificationDone = true;
                         $database->updateUser($user);
+                        error_log("User, updateUser, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
+
                         
                         $userProfile = $database->getOneUserById($_SESSION["idUser"]); // permet d'afficher directement les modifications
                         $_SESSION['theme'] = $database->getProfileNameById($userProfile['useProfilePref']);
@@ -441,6 +454,7 @@ class UserController extends Controller
                     if (array_key_exists("pic", $_GET) && $_GET["pic"] == "true")
                     {
                         $errorPngFile = true;
+                        error_log("User, PNG FIle, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                     }
                     else
                     {
@@ -448,6 +462,10 @@ class UserController extends Controller
                     }
                     
                 }
+            }
+            else
+            {
+                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage);
             }
         }
         else if (array_key_exists("idUser", $_SESSION))
@@ -463,6 +481,80 @@ class UserController extends Controller
             {
                 $selfPage = true;
             }
+        }
+        else 
+        {
+            $userProfile = null;
+            $errorPngFile = false;
+            $view = file_get_contents('view/page/restrictedPages/loginRegister/loginForm.php');
+        }
+
+        ob_start();
+        eval('?>' . $view);
+        $content = ob_get_clean();
+
+        return $content;
+    }
+
+    private function showHideAppartementAction()
+    {
+        $database = new Database();
+
+        $userProfile = array();
+        $user = array();
+        $view = "";
+        $selfPage = false;
+        $modificationDone = false;
+
+        // errors
+        $passwordModifFailed = false;
+        $imageEmpty = false;
+        $errorPngFile = true;
+
+        if (array_key_exists("idUser", $_GET) && $database->userExist(htmlspecialchars($_GET["idUser"])))
+        {
+            $userProfile = $database->getOneUserById(htmlspecialchars($_GET["idUser"]));
+            
+            $size = "";
+            $profiles = $database->getAllProfiles();
+
+            if (array_key_exists("idUser", $_SESSION) && $_SESSION["idUser"] == $_GET["idUser"])
+            {
+                if (array_key_exists("id", $_GET) && $database->AppartementExist(htmlspecialchars($_GET["id"])))
+                {
+                    if (array_key_exists("showHide", $_GET) && ($_GET["showHide"] == "1" || $_GET["showHide"] == "0"))
+                    {
+                        $database->editAppartementVisibility($_GET["id"], $_GET["showHide"]);
+                    }
+                }
+
+                $selfPage = true;
+                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage);
+
+                $errorPngFile = false;
+            }
+            else
+            {
+                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage);
+            }
+            
+            $view = file_get_contents('view/page/restrictedPages/userPage.php');
+        }
+        else if (array_key_exists("idUser", $_SESSION))
+        {
+            $errorPngFile = false;
+
+            $appartements = $database->getAppartementsByUserId($_SESSION["idUser"]);
+            $userProfile = $database->getOneUserById($_SESSION["idUser"]);
+            
+            $selfPage = false;
+
+            if (array_key_exists("idUser", $_GET) && array_key_exists("idUser", $_SESSION) && $_GET["idUser"] == $_SESSION["idUser"])
+            {
+                $selfPage = true;
+            }
+            
+            $view = file_get_contents('view/page/restrictedPages/userPage.php');
         }
         else 
         {

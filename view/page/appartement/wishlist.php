@@ -27,9 +27,15 @@
 		foreach ($wishAppartements as $appartement) {
 			$user = $database->getOneUserById($appartement["idUser"]);
 
-			echo '<tr>';
+			echo '<tr ';
+				if (!$appartement['appVisibility'])
+				{
+					echo 'class="text-danger"';
+				}
+				echo '>';
+
 				echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
-				echo '<td>' . htmlspecialchars($appartement['appCategory']) . '</td>';
+				echo '<td>' . htmlspecialchars($appartement['catName']) . '</td>';
 				echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
 				
 				echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
@@ -170,6 +176,10 @@
 	?>
 	
 	</table>
+
+	<div>
+		<p class="text-danger">*ces appartements ne sont plus en vente/location</p>
+	</div>
 
 	<!-- cette div contient la pagination des appartements-->
 	<div class="justify-content-right numPage" id="numPage"> 
