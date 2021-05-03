@@ -285,7 +285,7 @@ class UserController extends Controller
                     $user["idUser"] = $_SESSION["idUser"];
                     $errorPngFile = false;
 
-                    if (array_key_exists("fileUpdate", $_POST)) // form pour update l'image
+                    if (array_key_exists("fileUpdate", $_POST)) // form pour update l'image // TODO : vérifier le MIME type !!!!
                     {
                         if (!empty($_FILES["image"]["name"]) && $_FILES["image"]["name"] != "" && $this->extensionOk($_FILES["image"]["name"])) // vérifie qu'il y a bien un fichier de séléctionné
                         {
@@ -371,7 +371,7 @@ class UserController extends Controller
                         else
                         {
                             $passwordModifFailed = true;
-                            error_log("User, passwordModif [empty], idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
+                            error_log("User, passwordModif [empty], idUser : " . $_SESSION["idUser"] . " \t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                         }
                     }
                     else 
@@ -433,7 +433,7 @@ class UserController extends Controller
                             $user["useProfilePref"] = $userProfile["useProfilePref"];
                         }
 
-                        error_log("User, userMdif, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
+                        error_log("User, userModif, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
                     }
 
                     if (!$passwordModifFailed && !$imageEmpty && !$errorPngFile) // NOTE : (à vérifier à la fin du projet) ajouter les autre erreur ici afin que cela ne modifie pas la database s'il y a une erreur de form
@@ -454,6 +454,7 @@ class UserController extends Controller
                     if (array_key_exists("pic", $_GET) && $_GET["pic"] == "true")
                     {
                         $errorPngFile = true;
+                        error_log("User, PNG FIle, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                     }
                     else
                     {
