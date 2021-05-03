@@ -333,17 +333,22 @@ class UserController extends Controller
                                 }
 
                                 imagejpeg($image, "resources/image/Users/" . $imgName, 75); // compression de l'image 
-
+                                error_log("User, updateImage, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
                                 //move_uploaded_file($_FILES["image"]["tmp_name"], "resources/image/Users/" . $imgName);
 
                                 $userProfile["useImage"] = $imgName;
                                 $user["useImage"] = $imgName;
+                            }
+                            else
+                            {
+                                error_log("User, image convertion, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                             }
                         }
                         else 
                         {
                             $imageEmpty = true;
                             $errorPngFile = false;
+                            error_log("User, image vide, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                         }
                     }
                     else if (array_key_exists("modifPasswordForm", $_POST)) // gère la modification du mot de passe
@@ -355,15 +360,18 @@ class UserController extends Controller
                             if ($_POST["usePassword"] === $_POST["confirmePassword"]) // TODO : si le temps le permet : ajouter des validation pour le mot de passe
                             {
                                 $user["usePassword"] = password_hash($_POST["usePassword"], PASSWORD_DEFAULT);
+                                error_log("User, passwordModif, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");                                
                             }
                             else
                             {
                                 $passwordModifFailed = true;
+                                error_log("User, passwordModif [not equal], idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                             }
                         }
                         else
                         {
                             $passwordModifFailed = true;
+                            error_log("User, passwordModif [empty], idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                         }
                     }
                     else 
@@ -424,12 +432,16 @@ class UserController extends Controller
                         {
                             $user["useProfilePref"] = $userProfile["useProfilePref"];
                         }
+
+                        error_log("User, userMdif, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
                     }
 
                     if (!$passwordModifFailed && !$imageEmpty && !$errorPngFile) // NOTE : (à vérifier à la fin du projet) ajouter les autre erreur ici afin que cela ne modifie pas la database s'il y a une erreur de form
                     {
                         $modificationDone = true;
                         $database->updateUser($user);
+                        error_log("User, updateUser, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
+
                         
                         $userProfile = $database->getOneUserById($_SESSION["idUser"]); // permet d'afficher directement les modifications
                         $_SESSION['theme'] = $database->getProfileNameById($userProfile['useProfilePref']);
