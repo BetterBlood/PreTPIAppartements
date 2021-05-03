@@ -602,10 +602,12 @@ class AppartementController extends Controller {
                 $appartement["appImage"] = $imgName;
                 
                 $database->editAppartement($appartement); // modification du nom dans la database
+                error_log("EditAppartement Image, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");
             }
             else
             {
                 $imageEmpty = true;
+                error_log("EditAppartement Image, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
             }
         }
 
@@ -681,8 +683,12 @@ class AppartementController extends Controller {
                 $appartementTMP["appRate"] = 0;
 
                 $database->editAppartement($appartementTMP); // modification de l'appartement dans la base de donnée
-
+                error_log("AddAppartement Données, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");
                 $appartement = $database->getOneAppartement($_GET["id"]);
+            }
+            else
+            {
+                error_log("AddAppartement Données, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/erroLogTest.log");
             }
         }
 
@@ -715,6 +721,7 @@ class AppartementController extends Controller {
             if ($appartement["idUser"] == $_SESSION["idUser"])
             {
                 $database->deleteAppartement($_GET["id"]); // suppression dans la base de donnée
+                error_log("RemoveAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");
             }
         }
 
