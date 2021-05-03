@@ -32,12 +32,13 @@ class UserController extends Controller
             {
                 case "loginForm":
                 case "login":
-                case "logout":
+                case "logout": // vérifier que le logout n'est pas possible si on n'est pas connécté, mais bon ça n'a pas d'impacte donc pas important
                 case "registerForm":
                 case "register":
                     $action = $_GET['action'] . "Action";
                     break;
 
+                case "showHideAppartement":
                 case "profile":
                     if (array_key_exists("idUser", $_GET) && $database->userExist($_GET["idUser"]))
                     {
@@ -268,7 +269,6 @@ class UserController extends Controller
 
         if (array_key_exists("idUser", $_GET) && $database->userExist(htmlspecialchars($_GET["idUser"])))
         {
-            $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]));
             $userProfile = $database->getOneUserById(htmlspecialchars($_GET["idUser"]));
             $view = file_get_contents('view/page/restrictedPages/userPage.php');
             $size = "";
@@ -277,6 +277,7 @@ class UserController extends Controller
             if (array_key_exists("idUser", $_SESSION) && $_SESSION["idUser"] == $_GET["idUser"])
             {
                 $selfPage = true;
+                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage);
 
                 if (isset($_POST) && !empty($_POST))
                 {
@@ -449,6 +450,10 @@ class UserController extends Controller
                     
                 }
             }
+            else
+            {
+                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage);
+            }
         }
         else if (array_key_exists("idUser", $_SESSION))
         {
@@ -463,6 +468,80 @@ class UserController extends Controller
             {
                 $selfPage = true;
             }
+        }
+        else 
+        {
+            $userProfile = null;
+            $errorPngFile = false;
+            $view = file_get_contents('view/page/restrictedPages/loginRegister/loginForm.php');
+        }
+
+        ob_start();
+        eval('?>' . $view);
+        $content = ob_get_clean();
+
+        return $content;
+    }
+
+    private function showHideAppartementAction()
+    {
+        $database = new Database();
+
+        $userProfile = array();
+        $user = array();
+        $view = "";
+        $selfPage = false;
+        $modificationDone = false;
+
+        // errors
+        $passwordModifFailed = false;
+        $imageEmpty = false;
+        $errorPngFile = true;
+
+        if (array_key_exists("idUser", $_GET) && $database->userExist(htmlspecialchars($_GET["idUser"])))
+        {
+            $userProfile = $database->getOneUserById(htmlspecialchars($_GET["idUser"]));
+            
+            $size = "";
+            $profiles = $database->getAllProfiles();
+
+            if (array_key_exists("idUser", $_SESSION) && $_SESSION["idUser"] == $_GET["idUser"])
+            {
+                if (array_key_exists("id", $_GET) && $database->AppartementExist(htmlspecialchars($_GET["id"])))
+                {
+                    if (array_key_exists("showHide", $_GET) && ($_GET["showHide"] == "1" || $_GET["showHide"] == "0"))
+                    {
+                        $database->editAppartementVisibility($_GET["id"], $_GET["showHide"]);
+                    }
+                }
+
+                $selfPage = true;
+                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage);
+
+                $errorPngFile = false;
+            }
+            else
+            {
+                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage);
+            }
+            
+            $view = file_get_contents('view/page/restrictedPages/userPage.php');
+        }
+        else if (array_key_exists("idUser", $_SESSION))
+        {
+            $errorPngFile = false;
+
+            $appartements = $database->getAppartementsByUserId($_SESSION["idUser"]);
+            $userProfile = $database->getOneUserById($_SESSION["idUser"]);
+            
+            $selfPage = false;
+
+            if (array_key_exists("idUser", $_GET) && array_key_exists("idUser", $_SESSION) && $_GET["idUser"] == $_SESSION["idUser"])
+            {
+                $selfPage = true;
+            }
+            
+            $view = file_get_contents('view/page/restrictedPages/userPage.php');
         }
         else 
         {
