@@ -329,11 +329,12 @@ class AppartementController extends Controller {
             $_GET["start"] = 0;
         }
 
-        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]) && $database->isRateExist($_SESSION["idUser"], $_GET["id"]))
+        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]) && !$database->isRateExist($_SESSION["idUser"], $_GET["id"]))
         {
             $database->insertRating($_SESSION["idUser"], $_GET["id"]);
             $database->updateWish($_SESSION["idUser"], $_GET["id"], $database->GetVisitedStateForWish($_SESSION["idUser"], $_GET["id"]), 1);
             $database->updateAppartementRate($_GET["id"]);
+
             error_log("RateAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");            
         }
 
