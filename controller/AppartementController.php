@@ -463,12 +463,14 @@ class AppartementController extends Controller {
         
         $formError = false;
 
+        $categories = $database->getAllCategories();
+
         if (isset($_POST["appartementCreation1"])) // vérification de champ
         {
             $_SESSION["appartement"] = array();
             $_SESSION["appartement"]["appName"] = "";
             $_SESSION["appartement"]["appDescription"] = "";
-            $_SESSION["appartement"]["appCategory"] = "";
+            $_SESSION["appartement"]["appCategory"] = -1;
             $_SESSION["appartement"]["appSurface"] = -1;
             $_SESSION["appartement"]["appPrix"] = -1;
             
@@ -481,7 +483,7 @@ class AppartementController extends Controller {
                 $formError = true;
             }
 
-            if (array_key_exists("appCategory", $_POST) && trim($_POST["appCategory"]) != "" && strlen($_POST["appCategory"]) <= 100 && strlen($_POST["appCategory"]) > 4) // 5 charactère minimum
+            if (array_key_exists("appCategory", $_POST) && trim($_POST["appCategory"]) != "" && (int)$_POST["appCategory"] <= sizeof($categories) && (int)$_POST["appCategory"] > 0) // 5 charactère minimum
             {
                 $_SESSION["appartement"]["appCategory"] = $_POST["appCategory"];
             }
@@ -567,6 +569,7 @@ class AppartementController extends Controller {
         $database = new Database();
 
         $appartement = $database->getOneAppartement($_GET["id"]);
+        $categories = $database->getAllCategories();
 
         $imageEmpty = false;
         $formError = false;
@@ -619,7 +622,7 @@ class AppartementController extends Controller {
             $_SESSION["appartement"] = array();
             $_SESSION["appartement"]["appName"] = "";
             $_SESSION["appartement"]["appDescription"] = "";
-            $_SESSION["appartement"]["appCategory"] = "";
+            $_SESSION["appartement"]["appCategory"] = -1;
             $_SESSION["appartement"]["appSurface"] = -1;
             $_SESSION["appartement"]["appPrix"] = -1;
             
@@ -632,7 +635,7 @@ class AppartementController extends Controller {
                 $formError = true;
             }
 
-            if (array_key_exists("appCategory", $_POST) && trim($_POST["appCategory"]) != "" && strlen($_POST["appCategory"]) <= 100 && strlen($_POST["appCategory"]) > 4) // 5 charactère minimum
+            if (array_key_exists("appCategory", $_POST) && trim($_POST["appCategory"]) != "" && (int)$_POST["appCategory"] <= sizeof($categories) && (int)$_POST["appCategory"] > 0) // 5 charactère minimum
             {
                 $_SESSION["appartement"]["appCategory"] = $_POST["appCategory"];
             }

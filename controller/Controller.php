@@ -5,7 +5,7 @@
  * Contrôleur principal
  */
 
-abstract class Controller {
+abstract class Controller { // QUESTION : comment je protège les page de log ?
 
     protected $databasePath;
 
