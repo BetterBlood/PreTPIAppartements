@@ -283,7 +283,7 @@
             <th>Note</th>
             <th>Prix</th>
             <th class="text-center">auteur</th>
-            <th colspan="3" class="text-center">détail</th>
+            <th colspan="4" class="text-center">détail</th>
         </tr>
         <?php
         // pour le tableau : "table table-striped"
@@ -326,7 +326,20 @@
                             echo '<a onclick="return confirm(\'Voulez-vous vraiment supprimer définitivement cet appartement ?\')" href="index.php?controller=appartement&action=deleteAppartement&id=' . htmlspecialchars($appartement['idAppartement']) . '"><div class="bg-iconTrash"></div></a>';
                         }
                         echo '</td>';
-                    
+
+                        echo '<td class="icon-column">';
+                        if (isset($selfPage) && $selfPage)
+                        {
+                            if ($appartement["appVisibility"])
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=0"><img src="resources/image/icone/visibleIcon.png" alt="hide house icon"></a>';
+                            }
+                            else
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=1"><img src="resources/image/icone/invisibleIcon.png" alt="show house icon"></a>';
+                            }
+                        }
+                        echo '</td>';
                     }
                     else 
                     {
@@ -342,6 +355,20 @@
                         if (isset($selfPage) && $selfPage)
                         {
                             echo '<a onclick="return confirm(\'Voulez-vous vraiment supprimer définitivement cet appartement ?\')" href="index.php?controller=appartement&action=deleteAppartement&id=' . htmlspecialchars($appartement['idAppartement']) . '"><div class="bg-iconTrash"></div></a>';
+                        }
+                        echo '</td>';
+
+                        echo '<td class="icon-column">';
+                        if (isset($selfPage) && $selfPage)
+                        {
+                            if ($appartement["appVisibility"])
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=0"><img src="resources/image/icone/visibleIcon.png" alt="hide house icon"></a>';
+                            }
+                            else
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=1"><img src="resources/image/icone/invisibleIcon.png" alt="show house icon"></a>';
+                            }
                         }
                         echo '</td>';
                     }
@@ -406,7 +433,7 @@
                         $imageProfilLink = '"resources/image/Users/' . htmlspecialchars($user['useImage']) . '"';
                         //echo '<img class="d-block w-50" src=' . $imageProfilLink . ' alt="image de profile du créateur de l'appartement">';
                     
-                        echo '<td colspan="3" style="width:100px">';
+                        echo '<td colspan="4" style="width:100px">';
                             echo '<div class="card" style="width: 18rem;">';
                                 echo '<img src=' . $imageProfilLink . ' class="card-img-top" alt="image de profile du créateur de l\'appartement">';
                                 echo '<div class="card-body" style="color:black">';

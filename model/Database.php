@@ -148,9 +148,16 @@ class Database {
      * @param int $length
      * @return array
      */
-    public function getAllAppartements($start = 0, $length = 5)
+    public function getAllAppartements($start = 0, $length = 5, $selfPage = false)
     { 
-        $req = $this->queryPrepareExecute('SELECT * FROM t_appartement LIMIT '.  $start . ', ' . $length , null);// appeler la méthode pour executer la requète
+        if ($selfPage)
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement LIMIT '.  $start . ', ' . $length , null);// appeler la méthode pour executer la requète
+        }
+        else
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement WHERE t_appartement.appVisibility = 1 LIMIT '.  $start . ', ' . $length , null);
+        }
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 
@@ -328,9 +335,18 @@ class Database {
      * @param int $userId
      * @return array
      */
-    public function getAppartementsByUserId($userId)
+    public function getAppartementsByUserId($userId, $selfPage = false)
     {
-        $req = $this->queryPrepareExecute('SELECT * FROM t_appartement WHERE idUser = '. $userId , null);// appeler la méthode pour executer la requète
+        $req = "";
+
+        if (!$selfPage)
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement WHERE idUser = '. $userId . ' AND appVisibility = 1', null);
+        }
+        else
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement WHERE idUser = '. $userId , null);// appeler la méthode pour executer la requète
+        }
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 
@@ -393,13 +409,35 @@ class Database {
                 'input' => $appartement["idUser"],
                 'type' => PDO::PARAM_INT
             )
-        );
+        ); // TODO : ajouter $idAppartement dans les matchs
 
         $query =   'UPDATE t_appartement SET 
                     appName = :appName, appDescription = :appDescription, appCategory = :appCategory,
                     appImage = :appImage, appSurface = :appSurface, appDate = :appDate, appPrix = :appPrix,
                     appRate = :appRate, idUser = :idUser
                     WHERE idAppartement = ' . $appartement["idAppartement"];
+
+        $req = $this->queryPrepareExecute($query, $values);
+
+        $this->unsetData($req);
+    }
+
+    public function editAppartementVisibility($idAppartement, $visibility)
+    {
+        $values = array(
+            1 => array(
+                'marker' => ':idAppartement',
+                'input' => $idAppartement,
+                'type' => PDO::PARAM_INT
+            ),
+            2 => array(
+                'marker' => ':appVisibility',
+                'input' => $visibility,
+                'type' => PDO::PARAM_INT
+            )
+        );
+
+        $query =  'UPDATE t_appartement SET appVisibility = :appVisibility WHERE idAppartement = :idAppartement';
 
         $req = $this->queryPrepareExecute($query, $values);
 
