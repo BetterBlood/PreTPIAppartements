@@ -35,7 +35,7 @@
 				echo '>';
 
 				echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
-				echo '<td>' . htmlspecialchars($appartement['appCategory']) . '</td>';
+				echo '<td>' . htmlspecialchars($appartement['catName']) . '</td>';
 				echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
 				
 				echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';

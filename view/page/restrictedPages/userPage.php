@@ -207,7 +207,7 @@
             </div>
 
             <div class="form-group col-md-4 mb-3">
-                <label for="phone">Thème</label>
+                <label for="profilePref">Thème</label>
                 <?php
                 echo '<select id="profilePref" name="profilePref" class="form-control" ';
                     if (!$selfPage)
@@ -220,7 +220,6 @@
 
                     if (array_key_exists("useProfilePref", $userProfile) && $userProfile["useProfilePref"] == "-1")
                     {
-                        
                         echo 'selected';
                     }
                     
@@ -302,7 +301,7 @@
 
                 echo '<tr>';
                     echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
-                    echo '<td>' . htmlspecialchars($appartement['appCategory']) . '</td>';
+                    echo '<td>' . htmlspecialchars($appartement['catName']) . '</td>';
                     echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
                     
                     echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
