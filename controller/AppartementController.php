@@ -334,6 +334,7 @@ class AppartementController extends Controller {
             $database->insertRating($_SESSION["idUser"], $_GET["id"]);
             $database->updateWish($_SESSION["idUser"], $_GET["id"], $database->GetVisitedStateForWish($_SESSION["idUser"], $_GET["id"]), 1);
             $database->updateAppartementRate($_GET["id"]);
+            error_log("RateAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");            
         }
 
         $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
@@ -381,6 +382,7 @@ class AppartementController extends Controller {
             $database->removeRating($_SESSION["idUser"], $_GET["id"]);
             $database->updateWish($_SESSION["idUser"], $_GET["id"], $database->GetVisitedStateForWish($_SESSION["idUser"], $_GET["id"]), 0);
             $database->updateAppartementRate($_GET["id"]);
+            error_log("UnrateAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");            
         }
 
         $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
