@@ -1,0 +1,4 @@
+AuthName "Page d'administration protégée"
+AuthType Basic
+AuthUserFile "F:\ETML\19 - Outils\UwAmp\www\PreTPIAppartements\data"
+Require valid-user
