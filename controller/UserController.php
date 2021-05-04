@@ -1,7 +1,7 @@
 <?php
 /**
  * ETML
- * Auteur : Arthur Wallef, Pierre Morand & Jeremiah Steiner
+ * Auteur : Jeremiah Steiner
  * Date: 25.12.2020
  * Controler pour gérer les clients
  */
