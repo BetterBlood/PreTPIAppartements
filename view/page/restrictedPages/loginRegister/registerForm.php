@@ -1,4 +1,4 @@
-<h2>Login</h2>
+<h2>Register</h2>
 <form method="post" action="index.php?controller=user&action=register">
     <label for="username">Nom d'utilisateur</label>
     <input type="text" name="username">

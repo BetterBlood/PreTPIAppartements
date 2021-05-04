@@ -148,9 +148,16 @@ class Database {
      * @param int $length
      * @return array
      */
-    public function getAllAppartements($start = 0, $length = 5)
+    public function getAllAppartements($start = 0, $length = 5, $selfPage = false)
     { 
-        $req = $this->queryPrepareExecute('SELECT * FROM t_appartement LIMIT '.  $start . ', ' . $length , null);// appeler la méthode pour executer la requète
+        if ($selfPage)
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory LIMIT '.  $start . ', ' . $length , null);// appeler la méthode pour executer la requète
+        }
+        else
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory WHERE t_appartement.appVisibility = 1 LIMIT '.  $start . ', ' . $length , null);
+        }
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 
@@ -168,7 +175,9 @@ class Database {
      */
     public function getAllWishAppartements($start = 0, $length = 5, $idUser)
     { 
-        $req = $this->queryPrepareExecute('SELECT * FROM t_appartementswishlist INNER JOIN t_appartement ON t_appartement.idAppartement = t_appartementswishlist.idAppartement 
+        $req = $this->queryPrepareExecute('SELECT * FROM t_appartementswishlist 
+                                            LEFT JOIN t_appartement ON t_appartement.idAppartement = t_appartementswishlist.idAppartement
+                                            LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
                                             WHERE t_appartementswishlist.idUser = ' . $idUser . ' LIMIT '.  $start . ', ' . $length, null);// appeler la méthode pour executer la requète
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
@@ -186,7 +195,7 @@ class Database {
      */
     public function getOneAppartement($id)
     {
-        $req = $this->queryPrepareExecute('SELECT * FROM t_appartement WHERE idAppartement = ' . $id, null); // appeler la méthode pour executer la requète
+        $req = $this->queryPrepareExecute('SELECT * FROM t_appartement LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory WHERE idAppartement = ' . $id, null); // appeler la méthode pour executer la requète
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 
@@ -267,7 +276,7 @@ class Database {
             3 => array(
                 'marker' => ':appCategory',
                 'input' => $appartement["appCategory"],
-                'type' => PDO::PARAM_STR
+                'type' => PDO::PARAM_INT
             ),
             4 => array(
                 'marker' => ':appImage',
@@ -328,9 +337,22 @@ class Database {
      * @param int $userId
      * @return array
      */
-    public function getAppartementsByUserId($userId)
+    public function getAppartementsByUserId($userId, $selfPage = false)
     {
-        $req = $this->queryPrepareExecute('SELECT * FROM t_appartement WHERE idUser = '. $userId , null);// appeler la méthode pour executer la requète
+        $req = "";
+
+        if (!$selfPage)
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement 
+                                               LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
+                                               WHERE idUser = '. $userId . ' AND appVisibility = 1', null);
+        }
+        else
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement 
+                                               LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
+                                               WHERE idUser = '. $userId , null);// appeler la méthode pour executer la requète
+        }
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 
@@ -361,7 +383,7 @@ class Database {
             3 => array(
                 'marker' => ':appCategory',
                 'input' => $appartement["appCategory"],
-                'type' => PDO::PARAM_STR
+                'type' => PDO::PARAM_INT
             ),
             4 => array(
                 'marker' => ':appImage',
@@ -393,13 +415,35 @@ class Database {
                 'input' => $appartement["idUser"],
                 'type' => PDO::PARAM_INT
             )
-        );
+        ); // TODO : ajouter $idAppartement dans les matchs
 
         $query =   'UPDATE t_appartement SET 
                     appName = :appName, appDescription = :appDescription, appCategory = :appCategory,
                     appImage = :appImage, appSurface = :appSurface, appDate = :appDate, appPrix = :appPrix,
                     appRate = :appRate, idUser = :idUser
                     WHERE idAppartement = ' . $appartement["idAppartement"];
+
+        $req = $this->queryPrepareExecute($query, $values);
+
+        $this->unsetData($req);
+    }
+
+    public function editAppartementVisibility($idAppartement, $visibility)
+    {
+        $values = array(
+            1 => array(
+                'marker' => ':idAppartement',
+                'input' => $idAppartement,
+                'type' => PDO::PARAM_INT
+            ),
+            2 => array(
+                'marker' => ':appVisibility',
+                'input' => $visibility,
+                'type' => PDO::PARAM_INT
+            )
+        );
+
+        $query =  'UPDATE t_appartement SET appVisibility = :appVisibility WHERE idAppartement = :idAppartement';
 
         $req = $this->queryPrepareExecute($query, $values);
 
@@ -1073,6 +1117,25 @@ class Database {
     }
 
 
+
+
+
+
+
+
+    // CATEGORY
+    
+    
+    public function getAllCategories()
+    { 
+        $req = $this->queryPrepareExecute('SELECT * FROM t_category' , null);
+
+        $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
+
+        $this->unsetData($req);
+
+        return $appartements;// retour tous les appartements
+    }
 
 }
 ?>
