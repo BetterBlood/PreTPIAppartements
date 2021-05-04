@@ -33,7 +33,7 @@
                     if($_SESSION['isConnected'] == true) // vérification de la connection
                     {
                         echo '<div class="logMessage" ><a class="logOutButton btn btn-danger" href="index.php?controller=user&action=logout">Déconnexion</a>'; // déconnexion
-                            echo '<a class="btn btn-warning ml-2" href="index.php?controller=user&action=profile&idUser=' . $_SESSION["idUser"] . '">profile</a>'; // accès au profile de l'utilisateur
+                            echo '<a class="btn btn-warning ml-2" href="index.php?controller=user&action=profile&idUser=' . $_SESSION["idUser"] . '">Profile</a>'; // accès au profile de l'utilisateur
                             //echo $_SESSION['username']; // DEBUG 
                         echo '<br><span class="logMSG">Connecté en tant que ' . $_SESSION['username'] . '</span></div>';
                     }
