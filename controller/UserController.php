@@ -1,7 +1,7 @@
 <?php
 /**
  * ETML
- * Auteur : Arthur Wallef, Pierre Morand & Jeremiah Steiner
+ * Auteur : Jeremiah Steiner
  * Date: 25.12.2020
  * Controler pour gérer les clients
  */
@@ -112,7 +112,7 @@ class UserController extends Controller
             $_SESSION['idUser'] = $user['idUser'];
             $_SESSION['theme'] = $database->getProfileNameById($user['useProfilePref']);
             
-            error_log("Login Successfully, pseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/logs/activity.log");
+            error_log("Login Successfully, pseudo : {" . htmlspecialchars($_POST["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['activity']);
 
             header('location: index.php');
         }
@@ -137,7 +137,7 @@ class UserController extends Controller
     {
         $database = new Database();
 
-        error_log("Logout Successfully, pseudo : {" . htmlspecialchars($_SESSION["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/logs/activity.log");
+        error_log("Logout Successfully, pseudo : {" . htmlspecialchars($_SESSION["username"]) . "} \t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['activity']);
 
         session_destroy();
         header('location: index.php');
@@ -218,7 +218,7 @@ class UserController extends Controller
                     //$_SESSION['username'] = $username;
                     //$_SESSION['idUser'] = $user['idUser']; // l'id n'existe pas puisque il n'y a pas de get du dernier user ajouter a la database
 
-                    error_log("Register Successfully, pseudo : {" . htmlspecialchars($username) . "} \t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/logs/activity.log");
+                    error_log("Register Successfully, pseudo : {" . htmlspecialchars($username) . "} \t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['activity']);
 
                     header('location: index.php'); // redirection vers l'index
                     //rediriger vers une page de confirmation/erreur
@@ -287,8 +287,9 @@ class UserController extends Controller
 
                     if (array_key_exists("fileUpdate", $_POST)) // form pour update l'image // TODO : vérifier le MIME type !!!!
                     {
-                        if (!empty($_FILES["image"]["name"]) && $_FILES["image"]["name"] != "" && $this->extensionOk($_FILES["image"]["name"])) // vérifie qu'il y a bien un fichier de séléctionné
+                        if (!empty($_FILES["image"]["name"]) && $_FILES["image"]["name"] != "" && $this->extensionOk($_FILES["image"]["name"]) && $this->mimeOk($_FILES["image"]["tmp_name"], $_FILES["image"]["name"])) // vérifie qu'il y a bien un fichier de séléctionné
                         {
+                            //error_log("mimeType : " . mime_content_type($_FILES["image"]["tmp_name"]) . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['debug']); // DEBUG
                             $image = "";
                             $imgName = date("YmdHis") . "_" . $_FILES["image"]["name"];
 
@@ -300,7 +301,6 @@ class UserController extends Controller
                                 case "png":
                                     if ($size[0] * $size[1] < PHP_INT_MAX) // gestion des png trop volumineux
                                     {
-                                        
                                         $image = imageCreateFromPng($_FILES["image"]["tmp_name"]); // prépare la compression
                                         $errorPngFile = false;
                                     }
@@ -332,23 +332,37 @@ class UserController extends Controller
                                     unlink("resources/image/Users/" . $userProfile["useImage"]); // suppression de l'ancienne image
                                 }
 
-                                imagejpeg($image, "resources/image/Users/" . $imgName, 75); // compression de l'image 
-                                error_log("User, updateImage, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
+                                // création du nouveau nom de l'image (car enregistrée en jpeg)
+                                $imageNameSplit = preg_split("/\./", $imgName); // transformation en array du nom de l'image
+                                $imageNameSplit = array_slice($imageNameSplit, 0, sizeof($imageNameSplit) - 1); // suppression de l'extension (dernière case de l'array)
+                                $imgNewName = "";
+                                foreach ($imageNameSplit As $part) // recréation du nom de l'image (sans les points)
+                                {
+                                    $imgNewName .= $part;
+                                }
+                                $imgNewName .= ".jpg"; // ajout de l'extension jpg
+
+                                //error_log("newName : " . $imgNewName . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['debug']); // DEBUG
+
+                                imagejpeg($image, "resources/image/Users/" . $imgNewName, 75); // compression de l'image et enregistrement
+                                
+                                //error_log("path : " . $_FILES["image"]["tmp_name"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['debug']); // DEBUG
+                                error_log("User, updateImage, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['useModification']);
                                 //move_uploaded_file($_FILES["image"]["tmp_name"], "resources/image/Users/" . $imgName);
 
-                                $userProfile["useImage"] = $imgName;
-                                $user["useImage"] = $imgName;
+                                $userProfile["useImage"] = $imgNewName;
+                                $user["useImage"] = $imgNewName;
                             }
                             else
                             {
-                                error_log("User, image convertion, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
+                                error_log("User, image convertion (trop volumineux), idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                             }
                         }
                         else 
                         {
                             $imageEmpty = true;
                             $errorPngFile = false;
-                            error_log("User, image vide, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
+                            error_log("User, image vide ou mime type faux, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                         }
                     }
                     else if (array_key_exists("modifPasswordForm", $_POST)) // gère la modification du mot de passe
@@ -360,7 +374,7 @@ class UserController extends Controller
                             if ($_POST["usePassword"] === $_POST["confirmePassword"]) // TODO : si le temps le permet : ajouter des validation pour le mot de passe
                             {
                                 $user["usePassword"] = password_hash($_POST["usePassword"], PASSWORD_DEFAULT);
-                                error_log("User, passwordModif, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");                                
+                                error_log("User, passwordModif, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['useModification']);                                
                             }
                             else
                             {
@@ -433,14 +447,14 @@ class UserController extends Controller
                             $user["useProfilePref"] = $userProfile["useProfilePref"];
                         }
 
-                        error_log("User, userModif, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
+                        error_log("User, userModif, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['useModification']);
                     }
 
                     if (!$passwordModifFailed && !$imageEmpty && !$errorPngFile) // NOTE : (à vérifier à la fin du projet) ajouter les autre erreur ici afin que cela ne modifie pas la database s'il y a une erreur de form
                     {
                         $modificationDone = true;
                         $database->updateUser($user);
-                        error_log("User, updateUser, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
+                        error_log("User, updateUser, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['useModification']);
 
                         
                         $userProfile = $database->getOneUserById($_SESSION["idUser"]); // permet d'afficher directement les modifications

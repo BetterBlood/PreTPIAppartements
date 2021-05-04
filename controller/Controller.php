@@ -1,6 +1,6 @@
 <?php
 /**
- * Auteur : Cindy Hardegger, Jeremiah Steiner
+ * Auteur : Jeremiah Steiner
  * Date: 22.01.2019, 27.12.2020
  * Contrôleur principal
  */
@@ -47,15 +47,56 @@ abstract class Controller { // QUESTION : comment je protège les page de log ?
             case "jpg":
             case "GIF":
             case "gif":
+                //error_log("extension ok " . $ext . ", MIME : " . mime_content_type("resources/image/Users/" . $imageName) . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['debug']);
                 $extensionIsOk = true; // remplacer en return true; ?
                 break;
                 
             default:
+                //error_log("Fail extension " . $ext . ", MIME : " . mime_content_type($imageName) . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['debug']);
                 $extensionIsOk = false; // remplacer en return false; ?
                 break;
         }
 
         return $extensionIsOk;
+    }
+
+    protected function mimeOk($path, $extension)
+    {
+        $ext = pathinfo($extension, PATHINFO_EXTENSION);
+        
+
+        $mimeType = preg_split("/\//", mime_content_type($_FILES["image"]["tmp_name"]))[1];
+        //error_log("mime : " . $mimeType . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['debug']); // DEBUG
+        $return = false;
+
+        switch($mimeType)
+        {
+            case "png":
+                if ($ext == "PNG" || $ext == "png")
+                {
+                    $return = true;
+                }
+                break;
+
+            case "gif":
+                if ($ext == "gif" || $ext == "GIF")
+                {
+                    $return = true;
+                }
+                break;
+
+            case "jpeg":
+                if ($ext == "jpg" || $ext == "JPG")
+                {
+                    $return = true;
+                }
+                break;
+
+            default :
+                break;
+        }
+
+        return $return;
     }
     
 }
