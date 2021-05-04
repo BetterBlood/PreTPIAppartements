@@ -301,7 +301,6 @@ class UserController extends Controller
                                 case "png":
                                     if ($size[0] * $size[1] < PHP_INT_MAX) // gestion des png trop volumineux
                                     {
-                                        
                                         $image = imageCreateFromPng($_FILES["image"]["tmp_name"]); // prépare la compression
                                         $errorPngFile = false;
                                     }
@@ -333,17 +332,30 @@ class UserController extends Controller
                                     unlink("resources/image/Users/" . $userProfile["useImage"]); // suppression de l'ancienne image
                                 }
 
-                                imagejpeg($image, "resources/image/Users/" . $imgName, 75); // compression de l'image et enregistrement
+                                // création du nouveau nom de l'image (car enregistrée en jpeg)
+                                $imageNameSplit = preg_split("/\./", $imgName); // transformation en array du nom de l'image
+                                $imageNameSplit = array_slice($imageNameSplit, 0, sizeof($imageNameSplit) - 1); // suppression de l'extension (dernière case de l'array)
+                                $imgNewName = "";
+                                foreach ($imageNameSplit As $part) // recréation du nom de l'image (sans les points)
+                                {
+                                    $imgNewName .= $part;
+                                }
+                                $imgNewName .= ".jpg"; // ajout de l'extension
+
+                                //error_log("newName : " . $imgNewName . "\r", 3, "data/Logs/TMP/debug.log"); // DEBUG
+
+                                imagejpeg($image, "resources/image/Users/" . $imgNewName, 75); // compression de l'image et enregistrement
+                                
                                 //error_log("path : " . $_FILES["image"]["tmp_name"] . "\r", 3, "data/Logs/TMP/debug.log"); // DEBUG
                                 error_log("User, updateImage, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
                                 //move_uploaded_file($_FILES["image"]["tmp_name"], "resources/image/Users/" . $imgName);
 
-                                $userProfile["useImage"] = $imgName;
-                                $user["useImage"] = $imgName;
+                                $userProfile["useImage"] = $imgNewName;
+                                $user["useImage"] = $imgNewName;
                             }
                             else
                             {
-                                error_log("User, image convertion, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
+                                error_log("User, image convertion (trop volumineux), idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                             }
                         }
                         else 
