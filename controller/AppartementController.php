@@ -691,13 +691,13 @@ class AppartementController extends Controller {
                 $appartementTMP["appRate"] = 0;
 
                 $database->editAppartement($appartementTMP); // modification de l'appartement dans la base de donnée
-                error_log("AddAppartement Données, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");
+                error_log("editAppartement Données, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/appartements.log");
                 $appartement = $database->getOneAppartement($_GET["id"]);
                 $modificationDone = true;
             }
             else
             {
-                error_log("AddAppartement Données, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/erroLogTest.log");
+                error_log("editAppartement Données, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
             }
         }
 

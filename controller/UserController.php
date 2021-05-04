@@ -287,8 +287,9 @@ class UserController extends Controller
 
                     if (array_key_exists("fileUpdate", $_POST)) // form pour update l'image // TODO : vérifier le MIME type !!!!
                     {
-                        if (!empty($_FILES["image"]["name"]) && $_FILES["image"]["name"] != "" && $this->extensionOk($_FILES["image"]["name"])) // vérifie qu'il y a bien un fichier de séléctionné
+                        if (!empty($_FILES["image"]["name"]) && $_FILES["image"]["name"] != "" && $this->extensionOk($_FILES["image"]["name"]) && $this->mimeOk($_FILES["image"]["tmp_name"], $_FILES["image"]["name"])) // vérifie qu'il y a bien un fichier de séléctionné
                         {
+                            //error_log("mimeType : " . mime_content_type($_FILES["image"]["tmp_name"]) . "\r", 3, "data/Logs/TMP/debug.log"); // DEBUG
                             $image = "";
                             $imgName = date("YmdHis") . "_" . $_FILES["image"]["name"];
 
@@ -332,7 +333,8 @@ class UserController extends Controller
                                     unlink("resources/image/Users/" . $userProfile["useImage"]); // suppression de l'ancienne image
                                 }
 
-                                imagejpeg($image, "resources/image/Users/" . $imgName, 75); // compression de l'image 
+                                imagejpeg($image, "resources/image/Users/" . $imgName, 75); // compression de l'image et enregistrement
+                                //error_log("path : " . $_FILES["image"]["tmp_name"] . "\r", 3, "data/Logs/TMP/debug.log"); // DEBUG
                                 error_log("User, updateImage, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/DataModifications/users.log");
                                 //move_uploaded_file($_FILES["image"]["tmp_name"], "resources/image/Users/" . $imgName);
 
@@ -348,7 +350,7 @@ class UserController extends Controller
                         {
                             $imageEmpty = true;
                             $errorPngFile = false;
-                            error_log("User, image vide, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
+                            error_log("User, image vide ou mime type faux, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, "data/Logs/errors/errorLogTest.log");
                         }
                     }
                     else if (array_key_exists("modifPasswordForm", $_POST)) // gère la modification du mot de passe
