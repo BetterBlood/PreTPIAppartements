@@ -47,12 +47,12 @@ abstract class Controller { // QUESTION : comment je protège les page de log ?
             case "jpg":
             case "GIF":
             case "gif":
-                //error_log("extension ok " . $ext . ", MIME : " . mime_content_type("resources/image/Users/" . $imageName) . "\r", 3, "data/Logs/TMP/debug.log");
+                //error_log("extension ok " . $ext . ", MIME : " . mime_content_type("resources/image/Users/" . $imageName) . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['debug']);
                 $extensionIsOk = true; // remplacer en return true; ?
                 break;
                 
             default:
-                //error_log("Fail extension " . $ext . ", MIME : " . mime_content_type($imageName) . "\r", 3, "data/Logs/TMP/debug.log");
+                //error_log("Fail extension " . $ext . ", MIME : " . mime_content_type($imageName) . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['debug']);
                 $extensionIsOk = false; // remplacer en return false; ?
                 break;
         }
@@ -66,7 +66,7 @@ abstract class Controller { // QUESTION : comment je protège les page de log ?
         
 
         $mimeType = preg_split("/\//", mime_content_type($_FILES["image"]["tmp_name"]))[1];
-        //error_log("mime : " . $mimeType . "\r", 3, "data/Logs/TMP/debug.log"); // DEBUG
+        //error_log("mime : " . $mimeType . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['debug']); // DEBUG
         $return = false;
 
         switch($mimeType)
