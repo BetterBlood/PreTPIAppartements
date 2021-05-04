@@ -340,7 +340,7 @@ class UserController extends Controller
                                 {
                                     $imgNewName .= $part;
                                 }
-                                $imgNewName .= ".jpg"; // ajout de l'extension
+                                $imgNewName .= ".jpg"; // ajout de l'extension jpg
 
                                 //error_log("newName : " . $imgNewName . "\r", 3, "data/Logs/TMP/debug.log"); // DEBUG
 
