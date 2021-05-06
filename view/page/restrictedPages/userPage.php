@@ -7,6 +7,7 @@
 			{
                 echo 'Page de profile de : ' . $userProfile['usePseudo'];
                 $imageProfilLink = '"resources/image/Users/' . htmlspecialchars($userProfile['useImage']) . '"';
+                
 			}
 			else 
 			{
@@ -207,7 +208,7 @@
             </div>
 
             <div class="form-group col-md-4 mb-3">
-                <label for="phone">Thème</label>
+                <label for="profilePref">Thème</label>
                 <?php
                 echo '<select id="profilePref" name="profilePref" class="form-control" ';
                     if (!$selfPage)
@@ -220,7 +221,6 @@
 
                     if (array_key_exists("useProfilePref", $userProfile) && $userProfile["useProfilePref"] == "-1")
                     {
-                        
                         echo 'selected';
                     }
                     
@@ -275,15 +275,15 @@
     </div>
 
     <div class="row">
-        <table class="table table-striped table-dark">
+        <table class="table table-striped table-dark table-hover">
         <tr>
-            <th>nom</th> 
-            <th>catégorie</th>
-		    <th>Surface</th>
-            <th>Note</th>
-            <th>Prix</th>
-            <th class="text-center">auteur</th>
-            <th colspan="3" class="text-center">détail</th>
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=nom&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Nom</a></th> 
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=cat&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Catégorie</a></th>
+		    <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=sur&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Surface</a></th>
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=not&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Note</a></th>
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=pri&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Prix</a></th>
+            <th class="text-center">Auteur</th>
+            <th colspan="4" class="text-center">Détail</th>
         </tr>
         <?php
         // pour le tableau : "table table-striped"
@@ -300,9 +300,9 @@
             {
                 $user = $database->getOneUserById($appartement["idUser"]);
 
-                echo '<tr>';
+                echo '<tr id="appList' . $appartement["idAppartement"] . '">';
                     echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
-                    echo '<td>' . htmlspecialchars($appartement['appCategory']) . '</td>';
+                    echo '<td>' . htmlspecialchars($appartement['catName']) . '</td>';
                     echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
                     
                     echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
@@ -312,7 +312,7 @@
 
                     if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détails d'un appartement
                     {
-                        echo '<td class="icon-column"><a href="index.php?controller=user&action=profile&idUser=' . $appartement["idUser"] . '&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
+                        echo '<td class="icon-column"><a data-toggle="tooltip" data-placement="top" title="Moins" href="index.php?controller=user&action=profile&idUser=' . $appartement["idUser"] . '&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
                         echo '<td class="icon-column">';
                         if (isset($selfPage) && $selfPage)
                         {
@@ -326,11 +326,24 @@
                             echo '<a onclick="return confirm(\'Voulez-vous vraiment supprimer définitivement cet appartement ?\')" href="index.php?controller=appartement&action=deleteAppartement&id=' . htmlspecialchars($appartement['idAppartement']) . '"><div class="bg-iconTrash"></div></a>';
                         }
                         echo '</td>';
-                    
+
+                        echo '<td class="icon-column">';
+                        if (isset($selfPage) && $selfPage)
+                        {
+                            if ($appartement["appVisibility"])
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=0"><img src="resources/image/icone/visibleIcon.png" alt="hide house icon"></a>';
+                            }
+                            else
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=1"><img src="resources/image/icone/invisibleIcon.png" alt="show house icon"></a>';
+                            }
+                        }
+                        echo '</td>';
                     }
                     else 
                     {
-                        echo '<td class="icon-column"><a href="index.php?controller=user&action=profile&idUser=' . $appartement["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
+                        echo '<td class="icon-column"><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=user&action=profile&idUser=' . $appartement["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '#appList' . $appartement["idAppartement"] . '"><div class="bg-iconLoupe"></div></a></td>';
                         echo '<td class="icon-column">';
                         if (isset($selfPage) && $selfPage)
                         {
@@ -342,6 +355,20 @@
                         if (isset($selfPage) && $selfPage)
                         {
                             echo '<a onclick="return confirm(\'Voulez-vous vraiment supprimer définitivement cet appartement ?\')" href="index.php?controller=appartement&action=deleteAppartement&id=' . htmlspecialchars($appartement['idAppartement']) . '"><div class="bg-iconTrash"></div></a>';
+                        }
+                        echo '</td>';
+
+                        echo '<td class="icon-column">';
+                        if (isset($selfPage) && $selfPage)
+                        {
+                            if ($appartement["appVisibility"])
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=0"><img src="resources/image/icone/visibleIcon.png" alt="hide house icon"></a>';
+                            }
+                            else
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=1"><img src="resources/image/icone/invisibleIcon.png" alt="show house icon"></a>';
+                            }
                         }
                         echo '</td>';
                     }
@@ -406,7 +433,7 @@
                         $imageProfilLink = '"resources/image/Users/' . htmlspecialchars($user['useImage']) . '"';
                         //echo '<img class="d-block w-50" src=' . $imageProfilLink . ' alt="image de profile du créateur de l'appartement">';
                     
-                        echo '<td colspan="3" style="width:100px">';
+                        echo '<td colspan="4" style="width:100px">';
                             echo '<div class="card" style="width: 18rem;">';
                                 echo '<img src=' . $imageProfilLink . ' class="card-img-top" alt="image de profile du créateur de l\'appartement">';
                                 echo '<div class="card-body" style="color:black">';

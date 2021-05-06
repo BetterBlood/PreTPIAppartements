@@ -1,26 +1,26 @@
-function addIngredient()
-{
-    var lastField = ++document.getElementById("numberOfIngredients").value;
+// function addIngredient()
+// {
+//     var lastField = ++document.getElementById("numberOfIngredients").value;
 
-    var htmlString = '<div class="form-row">';
-    htmlString += '<input type="number" class="form-control col-md-2 mb-3 ml-auto mr-1 pt-n2 pb-n2" name="nbrIngredient' + lastField + '" placeholder="2" min="1" value="1">';
-    htmlString += '<input type="text" class="form-control col-md-9 mb-3 mr-auto pt-n2 pb-n2" name="ingredient' + lastField + '" placeholder="L d\'eau">';
-    htmlString += '</div>';
+//     var htmlString = '<div class="form-row">';
+//     htmlString += '<input type="number" class="form-control col-md-2 mb-3 ml-auto mr-1 pt-n2 pb-n2" name="nbrIngredient' + lastField + '" placeholder="2" min="1" value="1">';
+//     htmlString += '<input type="text" class="form-control col-md-9 mb-3 mr-auto pt-n2 pb-n2" name="ingredient' + lastField + '" placeholder="L d\'eau">';
+//     htmlString += '</div>';
 
-    document.getElementById("ingredients").innerHTML += htmlString;
-}
+//     document.getElementById("ingredients").innerHTML += htmlString;
+// }
 
-function addStep()
-{
-    var lastField = ++document.getElementById("numberOfstep").value;
+// function addStep()
+// {
+//     var lastField = ++document.getElementById("numberOfstep").value;
 
-    var htmlString = '<div class="form-row">';
-    htmlString += '<label class="mt-1" >' + lastField + ' -</label>';
-    htmlString += '<input type="text" class="form-control col-md-9 mb-3 mr-auto pt-n2 pb-n2 ml-1" name="step' + lastField + '" placeholder="placer les cornichons coupés dans le fond d\'un plat">';
-    htmlString += '</div>';
+//     var htmlString = '<div class="form-row">';
+//     htmlString += '<label class="mt-1" >' + lastField + ' -</label>';
+//     htmlString += '<input type="text" class="form-control col-md-9 mb-3 mr-auto pt-n2 pb-n2 ml-1" name="step' + lastField + '" placeholder="placer les cornichons coupés dans le fond d\'un plat">';
+//     htmlString += '</div>';
 
-    document.getElementById("preparationStep").innerHTML += htmlString;
-}
+//     document.getElementById("preparationStep").innerHTML += htmlString;
+// }
 
 // function deleteLastStep()
 // {
@@ -38,3 +38,8 @@ function addStep()
     
 //     // element.parentNode.removeChild(element);
 // }
+
+function reFocus()
+{
+    window.scrollTo(0, window.scrollY - 70);
+}

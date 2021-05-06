@@ -5,7 +5,7 @@
 			// redirection si l'appartement n'existe pas
 			if (isset($appartement))
 			{
-				echo $appartement['appName'] . ', dans la catégorie : ' . $appartement["appCategory"];
+				echo $appartement['appName'] . ', dans la catégorie : ' . $appartement["catName"];
 			}
 			else 
 			{

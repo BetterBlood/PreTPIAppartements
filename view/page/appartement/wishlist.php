@@ -5,16 +5,16 @@
 	
 </div>
 <div class="row">
-	<table class="table table-striped table-dark">
+	<table class="table table-striped table-dark table-hover">
 	<tr>
-		<th>Nom</th>
-		<th>Catégorie</th>
-		<th>Surface</th>
-        <th>Note</th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=nom&asc=<?php echo '' . $asc ? "false": "true"; ?>">Nom</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=cat&asc=<?php echo '' . $asc ? "false": "true"; ?>">Catégorie</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=sur&asc=<?php echo '' . $asc ? "false": "true"; ?>">Surface</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=not&asc=<?php echo '' . $asc ? "false": "true"; ?>">Note</a></th>
 		<th>Visité</th>
-		<th>Prix</th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=pri&asc=<?php echo '' . $asc ? "false": "true"; ?>">Prix</a></th>
 		<th>Noté</th>
-		<th class="text-center">Auteur</th>
+		<th class="text-center"><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=aut&asc=<?php echo '' . $asc ? "false": "true"; ?>">Auteur</a></th>
 		<th colspan="2" class="text-center">Détail</th>
 	</tr>
 	<?php
@@ -27,9 +27,15 @@
 		foreach ($wishAppartements as $appartement) {
 			$user = $database->getOneUserById($appartement["idUser"]);
 
-			echo '<tr>';
+			echo '<tr id="appList' . $appartement["idAppartement"] . '" ';
+				if (!$appartement['appVisibility'])
+				{
+					echo 'class="text-danger"';
+				}
+				echo '>';
+
 				echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
-				echo '<td>' . htmlspecialchars($appartement['appCategory']) . '</td>';
+				echo '<td>' . htmlspecialchars($appartement['catName']) . '</td>';
 				echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
 				
 				echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
@@ -51,12 +57,12 @@
 
 				if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détail d'un appartement
 				{
-					echo '<td><a href="index.php?controller=appartement&action=wishlist&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
+					echo '<td><a data-toggle="tooltip" data-placement="top" title="Moins" href="index.php?controller=appartement&action=wishlist&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
                     echo '<td><a onclick="return confirm(\'Voulez-vous vraiment retirer cet appartement de votre liste personnelle ?\')" href="index.php?controller=appartement&action=removeWish&page=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '"><img src="resources/image/icone/removeHouse.png" alt="remove house icon"></a></td>';
 				}
 				else 
 				{
-					echo '<td><a href="index.php?controller=appartement&action=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
+					echo '<td><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=appartement&action=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '#appList' . $appartement["idAppartement"] . '"><div class="bg-iconLoupe"></div></a></td>';
                     echo '<td><a onclick="return confirm(\'Voulez-vous vraiment retirer cet appartement de votre liste personnelle ?\')" href="index.php?controller=appartement&action=removeWish&page=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '"><img src="resources/image/icone/removeHouse.png" alt="remove house icon"></a></td>';					
 				}
 
@@ -70,7 +76,7 @@
 					$imageLink = '"resources/image/Appartements/' . htmlspecialchars($appartement['appImage']) . '"';
 					echo '<td COLSPAN="4">';
 						echo '<div class="card" style="width: 35rem;">';
-							echo '<img src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de l\'appartement">';
+							echo '<img onload="reFocus()" src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de l\'appartement">';
 							echo '<div class="card-body" style="color:black">';
 								echo '<h5 class="card-title">Description :</h5>';
 								echo '<p class="card-text">' . $appartement["appDescription"] . '</p>';
@@ -119,7 +125,7 @@
 					$imageProfilLink = '"resources/image/Users/' . htmlspecialchars($user['useImage']) . '"';
 					//echo '<img class="d-block w-50" src=' . $imageProfilLink . ' alt="image de profile du créateur de l'appartement">';
 				
-					echo '<td COLSPAN="2" style="width:100px">';
+					echo '<td COLSPAN="3" style="width:100px">';
 						echo '<div class="card" style="width: 18rem;">';
 							echo '<img src=' . $imageProfilLink . ' class="card-img-top" alt="image de profile du créateur de l\'appartement">';
 							echo '<div class="card-body" style="color:black">';
@@ -170,6 +176,10 @@
 	?>
 	
 	</table>
+
+	<div>
+		<p class="text-danger">*ces appartements ne sont plus en vente/location</p>
+	</div>
 
 	<!-- cette div contient la pagination des appartements-->
 	<div class="justify-content-right numPage" id="numPage"> 

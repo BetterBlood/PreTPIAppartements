@@ -187,8 +187,8 @@ ul.social-buttons li a:active, ul.social-buttons li a:focus, ul.social-buttons l
 
 @media (min-width: 992px) {
   #mainNav {
-    padding-top: 25px;
-    padding-bottom: 25px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     -webkit-transition: padding-top 0.3s, padding-bottom 0.3s;
     -moz-transition: padding-top 0.3s, padding-bottom 0.3s;
     transition: padding-top 0.3s, padding-bottom 0.3s;
@@ -215,24 +215,45 @@ ul.social-buttons li a:active, ul.social-buttons li a:focus, ul.social-buttons l
   }
 }
 
-@media (min-width: 500px) {
+@media (max-width: 992px) {
   .content{
     margin-top:10% !important;
     margin-bottom: 5%;
   }
 
   .mastHead{
-    margin-top: 7vh;
+    margin-top: 8vh;
   }
 }
 
-@media (min-width: 400px) {
+@media (max-width: 500px) {
   .content{
-    margin-top:15% !important;
+    margin-top:10% !important;
+    margin-bottom: 5%;
+  }
+
+  .mastHead{
+    margin-top: 8vh;
+  }
+}
+
+@media (max-width: 408px) {
+  .content{
+    margin-top:13% !important;
     margin-bottom: 5%;
   }
   .mastHead{
-    margin-top: 7vh;
+    margin-top: 16vh;
+  }
+}
+
+@media (max-width: 198px) {
+  .content{
+    margin-top:50% !important;
+    margin-bottom: 5%;
+  }
+  .mastHead{
+    padding-top: 50%;
   }
 }
 

@@ -16,14 +16,14 @@
 	</div>
 </div>
 <div class="row">
-	<table class="table table-striped table-dark">
+	<table class="table table-striped table-dark table-hover">
 	<tr>
-		<th>Nom</th>
-		<th>Catégorie</th>
-		<th>Surface</th>
-		<th>Note</th>
-		<th>Prix</th>
-		<th class="text-center">Auteur</th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=nom&asc=<?php echo '' . $asc ? "false": "true"; ?>">Nom</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=cat&asc=<?php echo '' . $asc ? "false": "true"; ?>">Catégorie</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=sur&asc=<?php echo '' . $asc ? "false": "true"; ?>">Surface</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=not&asc=<?php echo '' . $asc ? "false": "true"; ?>">Note</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=pri&asc=<?php echo '' . $asc ? "false": "true"; ?>">Prix</a></th>
+		<th class="text-center"><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=aut&asc=<?php echo '' . $asc ? "false": "true"; ?>">Auteur</a></th>
 		<th colspan="2" class="text-center">Détail</th>
 	</tr>
 	<?php
@@ -37,9 +37,9 @@
 		{
 			$user = $database->getOneUserById($appartement["idUser"]);
 
-			echo '<tr>';
+			echo '<tr id="appList' . $appartement["idAppartement"] . '">';
 				echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
-				echo '<td>' . htmlspecialchars($appartement['appCategory']) . '</td>';
+				echo '<td>' . htmlspecialchars($appartement['catName']) . '</td>';
 				echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
 
 				echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
@@ -49,7 +49,7 @@
 
 				if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détail d'un appartement
 				{
-					echo '<td><a href="index.php?controller=appartement&action=list&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
+					echo '<td><a data-toggle="tooltip" data-placement="top" title="Moins" href="index.php?controller=appartement&action=list&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
 					
 					if (array_key_exists("idUser", $_SESSION)) // possibilité d'ajouter à la liste d'appartement perso
 					{
@@ -69,7 +69,7 @@
 				}
 				else 
 				{
-					echo '<td colspan="2"><a href="index.php?controller=appartement&action=list&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
+					echo '<td colspan="2"><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=appartement&action=list&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '#appList' . $appartement["idAppartement"] . '"><div class="bg-iconLoupe"></div></a></td>';
 				}
 
 			echo '</tr>';
@@ -82,7 +82,7 @@
 					$imageLink = '"resources/image/Appartements/' . htmlspecialchars($appartement['appImage']) . '"';
 					echo '<td COLSPAN="4">';
 						echo '<div class="card" style="width: 35rem;">';
-							echo '<img src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de l\'appartement">';
+							echo '<img onload="reFocus()" src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de l\'appartement">';
 							echo '<div class="card-body" style="color:black">';
 								echo '<h5 class="card-title">Description :</h5>';
 								echo '<p class="card-text">' . $appartement["appDescription"] . '</p>';
@@ -239,6 +239,7 @@
 					if ($realStartIndex <= $lengthAppartement)
 					{
 						echo '<li class="page-item active"><a class="page-link" href="#">' . '1' . '</a></li>';
+
 						if (sizeof($appartements) != 0)
 						{
 							echo '<li class="page-item"><a class="page-link" href="index.php?controller=appartement&action=list&start=' . ($startIndex + $lengthAppartement) . '">' . '2' . '</a></li>';
