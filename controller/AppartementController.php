@@ -18,7 +18,8 @@ class AppartementController extends Controller {
      *
      * @return mixed
      */
-    public function display() {
+    public function display() 
+    {
         $action = "listAction";
 
         $database = new Database();
@@ -91,15 +92,18 @@ class AppartementController extends Controller {
      *
      * @return string
      */
-    private function listAction() {
+    private function listAction() 
+    {
         // Instancie le modèle et va chercher les informations
 
         $database = new Database();
         
-
         $startIndex = 0;
         $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre d'appartement affiché
         $_SESSION["appartementsPerPage"] = $lengthAppartement;
+        $_SESSION["appartementsNumber"] = $database->CountVisibleAppartements();
+
+        $nbrPages = 0;
 
         if (array_key_exists("start", $_GET) && $_GET["start"] > 0) // si le paramettre de start n'est pas négatif
         {
@@ -187,7 +191,8 @@ class AppartementController extends Controller {
      *
      * @return string
      */
-    private function wishlistAction() {
+    private function wishlistAction() 
+    {
         // Instancie le modèle et va chercher les informations
 
         $database = new Database();
@@ -195,6 +200,7 @@ class AppartementController extends Controller {
         $startIndex = 0;
         $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre d'appartement affiché
         $_SESSION["appartementsPerPage"] = $lengthAppartement;
+        $_SESSION["appartementsNumber"] = $database->CountVisibleAppartements();
 
         if (array_key_exists("start", $_GET) && $_GET["start"] > 0) // si le paramettre de start n'est pas négatif
         {
@@ -283,7 +289,8 @@ class AppartementController extends Controller {
      *
      * @return string
      */
-    private function addWishAction() {
+    private function addWishAction() 
+    {
         // Instancie le modèle et va chercher les informations
 
         $database = new Database();
@@ -385,7 +392,8 @@ class AppartementController extends Controller {
      *
      * @return string
      */
-    private function removeWishAction() {
+    private function removeWishAction() 
+    {
         // Instancie le modèle et va chercher les informations
         $database = new Database();
 
@@ -493,7 +501,8 @@ class AppartementController extends Controller {
      *
      * @return string
      */
-    private function rateAction() {
+    private function rateAction() 
+    {
         // Instancie le modèle et va chercher les informations
         $database = new Database();
 
@@ -587,7 +596,8 @@ class AppartementController extends Controller {
      *
      * @return string
      */
-    private function unrateAction() {
+    private function unrateAction() 
+    {
         // Instancie le modèle et va chercher les informations
         $database = new Database();
 
@@ -680,7 +690,8 @@ class AppartementController extends Controller {
      *
      * @return string
      */
-    private function detailAction() {
+    private function detailAction() 
+    {
         $database = new Database();
         $alreadyRate = false;
 
@@ -729,7 +740,8 @@ class AppartementController extends Controller {
      *
      * @return string
      */
-    private function addAppartementAction() {
+    private function addAppartementAction() 
+    {
         $database = new Database();
         
         $formError = false;
@@ -836,7 +848,8 @@ class AppartementController extends Controller {
      *
      * @return string
      */
-    private function editAppartementAction() {
+    private function editAppartementAction() 
+    {
         $database = new Database();
 
         $appartement = $database->getOneAppartement($_GET["id"]);
@@ -986,7 +999,8 @@ class AppartementController extends Controller {
      *
      * @return string
      */
-    private function deleteAppartementAction() {
+    private function deleteAppartementAction() 
+    {
         $database = new Database();
 
         if ($database->AppartementExist($_GET["id"]))
@@ -1030,7 +1044,8 @@ class AppartementController extends Controller {
      * @param int $lengthAppartement
      * @return int
      */
-    private function normalize($get, $lengthAppartement) {
+    private function normalize($get, $lengthAppartement) 
+    {
         //var_dump($get - $lengthAppartement);
 
         if ($get%$lengthAppartement != 0) // si le get n'est pas un nombre parfait au sens qu'il donne une page précise et pas une page entre-deux
@@ -1051,9 +1066,17 @@ class AppartementController extends Controller {
      * @param int $lengthAppartement
      * @return void
      */
-    private function normalizeStartIndex(&$startIndex, $database, $lengthAppartement) {
-        $appartementNumber = $database->CountAppartements();
-        $_SESSION["appartementsNumber"] = $appartementNumber;
+    private function normalizeStartIndex(&$startIndex, $database, $lengthAppartement) 
+    {
+        if (array_key_exists("appartementsNumber", $_SESSION))
+        {
+            $appartementNumber = $_SESSION["appartementsNumber"];
+        }
+        else
+        {
+            $appartementNumber = $database->CountAppartements();
+        }
+        
 
         if ($appartementNumber > $_GET["start"]) // si le paramettre n'est ni trop grand ni trop petit
         {
