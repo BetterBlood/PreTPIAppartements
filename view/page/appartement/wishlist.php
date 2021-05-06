@@ -57,12 +57,12 @@
 
 				if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détail d'un appartement
 				{
-					echo '<td><a href="index.php?controller=appartement&action=wishlist&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
+					echo '<td><a data-toggle="tooltip" data-placement="top" title="Moins" href="index.php?controller=appartement&action=wishlist&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
                     echo '<td><a onclick="return confirm(\'Voulez-vous vraiment retirer cet appartement de votre liste personnelle ?\')" href="index.php?controller=appartement&action=removeWish&page=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '"><img src="resources/image/icone/removeHouse.png" alt="remove house icon"></a></td>';
 				}
 				else 
 				{
-					echo '<td><a href="index.php?controller=appartement&action=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
+					echo '<td><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=appartement&action=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
                     echo '<td><a onclick="return confirm(\'Voulez-vous vraiment retirer cet appartement de votre liste personnelle ?\')" href="index.php?controller=appartement&action=removeWish&page=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '"><img src="resources/image/icone/removeHouse.png" alt="remove house icon"></a></td>';					
 				}
 
@@ -125,7 +125,7 @@
 					$imageProfilLink = '"resources/image/Users/' . htmlspecialchars($user['useImage']) . '"';
 					//echo '<img class="d-block w-50" src=' . $imageProfilLink . ' alt="image de profile du créateur de l'appartement">';
 				
-					echo '<td COLSPAN="2" style="width:100px">';
+					echo '<td COLSPAN="3" style="width:100px">';
 						echo '<div class="card" style="width: 18rem;">';
 							echo '<img src=' . $imageProfilLink . ' class="card-img-top" alt="image de profile du créateur de l\'appartement">';
 							echo '<div class="card-body" style="color:black">';
