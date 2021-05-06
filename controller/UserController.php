@@ -571,6 +571,52 @@ class UserController extends Controller
         $imageEmpty = false;
         $errorPngFile = true;
 
+        // tri
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+    
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
+        }
+
         if (array_key_exists("idUser", $_GET) && $database->userExist(htmlspecialchars($_GET["idUser"])))
         {
             $userProfile = $database->getOneUserById(htmlspecialchars($_GET["idUser"]));
