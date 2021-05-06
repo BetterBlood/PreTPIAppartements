@@ -49,7 +49,7 @@
 
 				if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détail d'un appartement
 				{
-					echo '<td><a href="index.php?controller=appartement&action=list&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
+					echo '<td><a data-toggle="tooltip" data-placement="top" title="Moins" href="index.php?controller=appartement&action=list&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
 					
 					if (array_key_exists("idUser", $_SESSION)) // possibilité d'ajouter à la liste d'appartement perso
 					{
@@ -69,7 +69,7 @@
 				}
 				else 
 				{
-					echo '<td colspan="2"><a href="index.php?controller=appartement&action=list&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
+					echo '<td colspan="2"><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=appartement&action=list&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
 				}
 
 			echo '</tr>';
