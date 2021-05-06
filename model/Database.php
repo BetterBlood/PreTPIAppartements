@@ -119,6 +119,19 @@ class Database {
     }
 
     /**
+     * compte les appartements
+     *
+     * @return int
+     */
+    public function CountVisibleAppartements()
+    {
+        $req = $this->queryPrepareExecute('SELECT Count(idAppartement) FROM t_appartement WHERE appVisibility = true', null);// appeler la méthode pour executer la requète
+        $appartements = $this->formatData($req);
+
+        return $appartements[0]['Count(idAppartement)'];
+    }
+
+    /**
      * vérifie si l'appartement existe
      *
      * @param int $idAppartement

@@ -239,6 +239,7 @@
 					if ($realStartIndex <= $lengthAppartement)
 					{
 						echo '<li class="page-item active"><a class="page-link" href="#">' . '1' . '</a></li>';
+
 						if (sizeof($appartements) != 0)
 						{
 							echo '<li class="page-item"><a class="page-link" href="index.php?controller=appartement&action=list&start=' . ($startIndex + $lengthAppartement) . '">' . '2' . '</a></li>';
