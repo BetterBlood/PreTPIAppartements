@@ -274,7 +274,7 @@
     </div>
 
     <div class="row">
-        <table class="table table-striped table-dark">
+        <table class="table table-striped table-dark table-hover">
         <tr>
             <th>nom</th> 
             <th>catégorie</th>
