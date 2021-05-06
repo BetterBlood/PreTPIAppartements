@@ -27,7 +27,7 @@
 		foreach ($wishAppartements as $appartement) {
 			$user = $database->getOneUserById($appartement["idUser"]);
 
-			echo '<tr ';
+			echo '<tr id="appList' . $appartement["idAppartement"] . '" ';
 				if (!$appartement['appVisibility'])
 				{
 					echo 'class="text-danger"';
@@ -62,7 +62,7 @@
 				}
 				else 
 				{
-					echo '<td><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=appartement&action=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
+					echo '<td><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=appartement&action=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '#appList' . $appartement["idAppartement"] . '"><div class="bg-iconLoupe"></div></a></td>';
                     echo '<td><a onclick="return confirm(\'Voulez-vous vraiment retirer cet appartement de votre liste personnelle ?\')" href="index.php?controller=appartement&action=removeWish&page=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '"><img src="resources/image/icone/removeHouse.png" alt="remove house icon"></a></td>';					
 				}
 
@@ -76,7 +76,7 @@
 					$imageLink = '"resources/image/Appartements/' . htmlspecialchars($appartement['appImage']) . '"';
 					echo '<td COLSPAN="4">';
 						echo '<div class="card" style="width: 35rem;">';
-							echo '<img src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de l\'appartement">';
+							echo '<img onload="reFocus()" src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de l\'appartement">';
 							echo '<div class="card-body" style="color:black">';
 								echo '<h5 class="card-title">Description :</h5>';
 								echo '<p class="card-text">' . $appartement["appDescription"] . '</p>';

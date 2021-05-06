@@ -7,20 +7,29 @@
 			{
                 echo 'Page de profile de : ' . $userProfile['usePseudo'];
                 $imageProfilLink = '"resources/image/Users/' . htmlspecialchars($userProfile['useImage']) . '"';
-                
+
+                if (!array_key_exists("role", $_SESSION))
+                {
+                    $_SESSION["role"] = $userProfile["useRole"];
+                }
 			}
 			else 
 			{
 				header("Location: index.php?controller=user&action=loginForm");
 			}
             
-            
-            //var_dump($_FILES);
+            //var_dump($_SESSION);
             //var_dump($size);
 		?>
     </h2>
 
     <?php
+        if (array_key_exists("role", $_SESSION) && $_SESSION["role"] >= 100)
+        {
+            echo '<p class="logMSG">Privilège administrateur accordé !</p>';
+            echo '<a class="btn btn-danger mb-3">accèder à la page de gestion des comptes </a>';
+        }
+
         if (array_key_exists("isConnected", $_SESSION) && $_SESSION["isConnected"] && array_key_exists("usePseudo", $userProfile) && isset($selfPage) && $selfPage) 
         {
             //echo '<p class="text-white">DEBUG accès en modification ! </p>'; // DEBUG
@@ -32,7 +41,6 @@
                 //var_dump($_POST); // DEBUG
             }
         }
-        
     ?>
     
     <div class="text-white">
@@ -41,7 +49,6 @@
         
         if (isset($selfPage) && $selfPage) // page de l'utilisateur en accès propriétaire 
         {
-
             echo '<form action="index.php?controller=user&action=profile&pic=true&idUser=' . $userProfile["idUser"] . '" method="post" enctype="multipart/form-data">';
                 ?>
                 <input type="text" id="fileUpdate" name="fileUpdate" style="display: none;" value="true">
@@ -300,7 +307,7 @@
             {
                 $user = $database->getOneUserById($appartement["idUser"]);
 
-                echo '<tr>';
+                echo '<tr id="appList' . $appartement["idAppartement"] . '">';
                     echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
                     echo '<td>' . htmlspecialchars($appartement['catName']) . '</td>';
                     echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
@@ -343,7 +350,7 @@
                     }
                     else 
                     {
-                        echo '<td class="icon-column"><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=user&action=profile&idUser=' . $appartement["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
+                        echo '<td class="icon-column"><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=user&action=profile&idUser=' . $appartement["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '#appList' . $appartement["idAppartement"] . '"><div class="bg-iconLoupe"></div></a></td>';
                         echo '<td class="icon-column">';
                         if (isset($selfPage) && $selfPage)
                         {

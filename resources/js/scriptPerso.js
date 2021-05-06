@@ -38,3 +38,8 @@
     
 //     // element.parentNode.removeChild(element);
 // }
+
+function reFocus()
+{
+    window.scrollTo(0, window.scrollY - 70);
+}
