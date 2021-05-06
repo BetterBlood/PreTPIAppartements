@@ -18,12 +18,12 @@
 <div class="row">
 	<table class="table table-striped table-dark table-hover">
 	<tr>
-		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=nom&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Nom</a></th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=cat&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Catégorie</a></th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=sur&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Surface</a></th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=not&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Note</a></th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=pri&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Prix</a></th>
-		<th class="text-center"><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=aut&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Auteur</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=nom&asc=<?php echo '' . $asc ? "false": "true"; ?>">Nom</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=cat&asc=<?php echo '' . $asc ? "false": "true"; ?>">Catégorie</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=sur&asc=<?php echo '' . $asc ? "false": "true"; ?>">Surface</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=not&asc=<?php echo '' . $asc ? "false": "true"; ?>">Note</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=pri&asc=<?php echo '' . $asc ? "false": "true"; ?>">Prix</a></th>
+		<th class="text-center"><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=aut&asc=<?php echo '' . $asc ? "false": "true"; ?>">Auteur</a></th>
 		<th colspan="2" class="text-center">Détail</th>
 	</tr>
 	<?php
