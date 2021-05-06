@@ -50,7 +50,7 @@
                         <input type="file" name="image" id="image" />
                         <input class="btn btn-primary mb-2" type="submit" value="Modifier" />
                         <?php
-                        if ((isset($imageEmpty) && $imageEmpty) || $errorPngFile) // TODO : comprendre pourquoi $errorPngFile n'est jamais set a true
+                        if ((isset($imageEmpty) && $imageEmpty) || $errorPngFile)
                         {
                             echo '<strong class="text-danger">l\'image séléctionnée n\'est pas valide, ou trop volumineuse.</strong>';
                         }
@@ -207,15 +207,37 @@
             </div>
 
             <div class="form-group col-md-4 mb-3">
-                <label for="phone">Thème</label> 
-                <?php // TODO : faire une liste déroulante avec les thème dispo (selon database), et faire pareil pour les catégories d'appartement !!!
-                    echo '<input type="tel" class="form-control" name="profilePref" id="profilePref" placeholder="' . $userProfile["useProfilePref"] . '" ' . 'value="' . $userProfile["useProfilePref"] . '" ';
+                <label for="profilePref">Thème</label>
+                <?php
+                echo '<select id="profilePref" name="profilePref" class="form-control" ';
                     if (!$selfPage)
                     {
                         echo 'disabled="disabled"';
                     }
                     echo '>';
+                    
+                    echo '<option value="-1" ';
+
+                    if (array_key_exists("useProfilePref", $userProfile) && $userProfile["useProfilePref"] == "-1")
+                    {
+                        echo 'selected';
+                    }
+                    
+                    echo '>aucun</option>';
+
+                    foreach ($profiles as $profile) 
+                    {
+                        echo '<option value="' . $profile["idProfile"] . '"';
+
+                        if (array_key_exists("useProfilePref", $userProfile) && $userProfile["useProfilePref"] == $profile["idProfile"])
+                        {
+                            echo 'selected';
+                        }
+                        
+                        echo '>' . $profile["proName"] . '</option>';
+                    }
                 ?>
+                </select>
             </div>
 
         </div>
@@ -252,7 +274,7 @@
     </div>
 
     <div class="row">
-        <table class="table table-striped table-dark">
+        <table class="table table-striped table-dark table-hover">
         <tr>
             <th>nom</th> 
             <th>catégorie</th>
@@ -260,7 +282,7 @@
             <th>Note</th>
             <th>Prix</th>
             <th class="text-center">auteur</th>
-            <th colspan="3" class="text-center">détail</th>
+            <th colspan="4" class="text-center">détail</th>
         </tr>
         <?php
         // pour le tableau : "table table-striped"
@@ -273,25 +295,21 @@
                 $startIndex = $_GET["start"];
             }
 
-            foreach ($appartements as $appartement) {
+            foreach ($appartements as $appartement) 
+            {
                 $user = $database->getOneUserById($appartement["idUser"]);
 
                 echo '<tr>';
                     echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
-                    echo '<td>' . htmlspecialchars($appartement['appCategory']) . '</td>';
+                    echo '<td>' . htmlspecialchars($appartement['catName']) . '</td>';
                     echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
-                    if (isset($appartement["appRate"])) // TODO : modifier ça
-                    {
-                        echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
-                    }
-                    else
-                    {
-                        echo '<td>pas encore notée</td>';
-                    }
+                    
+                    echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
+
                     echo '<td>' . htmlspecialchars($appartement['appPrix']) . ' CHF</td>';
                     echo '<td class="text-center">' . $user["usePseudo"] . '</td>';
 
-                    if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détails d'une recette
+                    if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détails d'un appartement
                     {
                         echo '<td class="icon-column"><a href="index.php?controller=user&action=profile&idUser=' . $appartement["idUser"] . '&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
                         echo '<td class="icon-column">';
@@ -307,7 +325,20 @@
                             echo '<a onclick="return confirm(\'Voulez-vous vraiment supprimer définitivement cet appartement ?\')" href="index.php?controller=appartement&action=deleteAppartement&id=' . htmlspecialchars($appartement['idAppartement']) . '"><div class="bg-iconTrash"></div></a>';
                         }
                         echo '</td>';
-                    
+
+                        echo '<td class="icon-column">';
+                        if (isset($selfPage) && $selfPage)
+                        {
+                            if ($appartement["appVisibility"])
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=0"><img src="resources/image/icone/visibleIcon.png" alt="hide house icon"></a>';
+                            }
+                            else
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=1"><img src="resources/image/icone/invisibleIcon.png" alt="show house icon"></a>';
+                            }
+                        }
+                        echo '</td>';
                     }
                     else 
                     {
@@ -322,22 +353,36 @@
                         echo '<td class="icon-column">';
                         if (isset($selfPage) && $selfPage)
                         {
-                            echo '<a onclick="return confirm(\'Voulez-vous vraiment supprimer définitivement cette recette ?\')" href="index.php?controller=appartement&action=deleteAppartement&id=' . htmlspecialchars($appartement['idAppartement']) . '"><div class="bg-iconTrash"></div></a>';
+                            echo '<a onclick="return confirm(\'Voulez-vous vraiment supprimer définitivement cet appartement ?\')" href="index.php?controller=appartement&action=deleteAppartement&id=' . htmlspecialchars($appartement['idAppartement']) . '"><div class="bg-iconTrash"></div></a>';
+                        }
+                        echo '</td>';
+
+                        echo '<td class="icon-column">';
+                        if (isset($selfPage) && $selfPage)
+                        {
+                            if ($appartement["appVisibility"])
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=0"><img src="resources/image/icone/visibleIcon.png" alt="hide house icon"></a>';
+                            }
+                            else
+                            {
+                                echo '<a href="index.php?controller=user&action=showHideAppartement&idUser=' . $_SESSION["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&showHide=1"><img src="resources/image/icone/invisibleIcon.png" alt="show house icon"></a>';
+                            }
                         }
                         echo '</td>';
                     }
 
                 echo '</tr>';
 
-                if (array_key_exists("id", $_GET) && htmlspecialchars($_GET["id"]) == htmlspecialchars($appartement['idAppartement'])) // les premiers détails de la recette sont divisé en 3 parties
+                if (array_key_exists("id", $_GET) && htmlspecialchars($_GET["id"]) == htmlspecialchars($appartement['idAppartement'])) // les premiers détails de l'appartement sont divisé en 3 parties
                 {
                     echo '<tr>';
 
-                        // première partie : concerne la recette elle-même
+                        // première partie : concerne l'appartement lui-même
                         $imageLink = '"resources/image/Appartements/' . htmlspecialchars($appartement['appImage']) . '"';
                         echo '<td COLSPAN="4">';
                             echo '<div class="card" style="width: 35rem;">';
-                                echo '<img src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de la recette">';
+                                echo '<img src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de l\'appartement">';
                                 echo '<div class="card-body" style="color:black">';
                                     echo '<h5 class="card-title">Description :</h5>';
                                     echo '<p class="card-text">' . $appartement["appDescription"] . '</p>';
@@ -348,7 +393,7 @@
                                     }
                                     else
                                     {
-                                        echo '<a href="index.php?controller=user&action=loginForm" class="btn btn-primary">Voir la recette</a>';
+                                        echo '<a href="index.php?controller=user&action=loginForm" class="btn btn-primary">Voir l\'appartement</a>';
 
                                     }
 
@@ -356,7 +401,7 @@
                             echo '</div>';
                         echo '</td>';
 
-                        // seconde partie : les information secondaire de la recette (avec la note la difficultée et le temps de préparation)
+                        // seconde partie : les information secondaire de l'appartement (avec la note la difficultée et le temps de préparation)
                         echo '<td colspan="2">';
                             echo '<div class="card" style="width: 18rem;">';
                                 echo '<div class="card-body" style="color:black">';
@@ -364,7 +409,7 @@
 
                                     if (array_key_exists("isConnected", $_SESSION) && $_SESSION["isConnected"])
                                     {
-                                        echo '<a href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '" class="btn btn-success">Noter la recette</a>' . '</p>';
+                                        echo '<a href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '" class="btn btn-success">Noter l\'appartement</a>' . '</p>';
                                     }
                                     else
                                     {
@@ -385,11 +430,11 @@
 
                         // troisième partie : contient les premières informations du l'utilisateur
                         $imageProfilLink = '"resources/image/Users/' . htmlspecialchars($user['useImage']) . '"';
-                        //echo '<img class="d-block w-50" src=' . $imageProfilLink . ' alt="image de profile du créateur de la recette">';
+                        //echo '<img class="d-block w-50" src=' . $imageProfilLink . ' alt="image de profile du créateur de l'appartement">';
                     
-                        echo '<td colspan="3" style="width:100px">';
+                        echo '<td colspan="4" style="width:100px">';
                             echo '<div class="card" style="width: 18rem;">';
-                                echo '<img src=' . $imageProfilLink . ' class="card-img-top" alt="image de profile du créateur de la recette">';
+                                echo '<img src=' . $imageProfilLink . ' class="card-img-top" alt="image de profile du créateur de l\'appartement">';
                                 echo '<div class="card-body" style="color:black">';
                                     echo '<h5 class="card-title">' . $user["usePseudo"] . '</h5>';
                                     echo '<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card\'s content.</p>';

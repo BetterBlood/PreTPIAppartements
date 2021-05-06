@@ -114,11 +114,12 @@ class Database {
     {
         $req = $this->queryPrepareExecute('SELECT Count(idAppartement) FROM t_appartement', null);// appeler la méthode pour executer la requète
         $appartements = $this->formatData($req);
+
         return $appartements[0]['Count(idAppartement)'];
     }
 
     /**
-     * vérifie si la recette existe
+     * vérifie si l'appartement existe
      *
      * @param int $idAppartement
      * @return bool
@@ -141,21 +142,37 @@ class Database {
     }
 
     /**
-     * récupère tous les recettes de la database
+     * récupère tous les appartements de la database
      *
      * @param int $start
      * @param int $length
      * @return array
      */
-    public function getAllAppartements($start = 0, $length = 5)
+    public function getAllAppartements($start = 0, $length = 5, $selfPage = false, $orderBy = "idAppartement", $asc = true)
     { 
-        $req = $this->queryPrepareExecute('SELECT * FROM t_appartement LIMIT '.  $start . ', ' . $length , null);// appeler la méthode pour executer la requète
+        $order = $asc ? "ASC" : "DESC";
+
+        if ($selfPage)
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement 
+                                               LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
+                                               ORDER BY t_appartement.' . $orderBy . ' ' . $order . ' 
+                                               LIMIT '.  $start . ', ' . $length , null);// appeler la méthode pour executer la requète
+        }
+        else
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement 
+                                               LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
+                                               WHERE t_appartement.appVisibility = 1 
+                                               ORDER BY t_appartement.' . $orderBy . ' ' . $order .' 
+                                               LIMIT '.  $start . ', ' . $length , null);
+        }
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 
         $this->unsetData($req);
 
-        return $appartements;// retour tous les recettes
+        return $appartements;// retour tous les appartements
     }
 
     /**
@@ -165,10 +182,16 @@ class Database {
      * @param int $length
      * @return array
      */
-    public function getAllWishAppartements($start = 0, $length = 5, $idUser)
+    public function getAllWishAppartements($start = 0, $length = 5, $idUser, $orderBy = "idAppartement", $asc = true)
     { 
-        $req = $this->queryPrepareExecute('SELECT * FROM t_appartementswishlist INNER JOIN t_appartement ON t_appartement.idAppartement = t_appartementswishlist.idAppartement 
-                                            WHERE t_appartementswishlist.idUser = ' . $idUser . ' LIMIT '.  $start . ', ' . $length, null);// appeler la méthode pour executer la requète
+        $order = $asc ? "ASC" : "DESC";
+
+        $req = $this->queryPrepareExecute('SELECT * FROM t_appartementswishlist 
+                                            LEFT JOIN t_appartement ON t_appartement.idAppartement = t_appartementswishlist.idAppartement
+                                            LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
+                                            WHERE t_appartementswishlist.idUser = ' . $idUser . ' 
+                                            ORDER BY t_appartement.' . $orderBy . ' ' . $order . '
+                                            LIMIT '.  $start . ', ' . $length, null);// appeler la méthode pour executer la requète
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 
@@ -178,24 +201,24 @@ class Database {
     }
 
     /**
-     * permet d'obtenir une recette spécifique
+     * permet d'obtenir un appartement spécifique
      *
      * @param int $id
      * @return array
      */
     public function getOneAppartement($id)
     {
-        $req = $this->queryPrepareExecute('SELECT * FROM t_appartement WHERE idAppartement = ' . $id, null); // appeler la méthode pour executer la requète
+        $req = $this->queryPrepareExecute('SELECT * FROM t_appartement LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory WHERE idAppartement = ' . $id, null); // appeler la méthode pour executer la requète
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 
         $this->unsetData($req);
 
-        return $appartements[0];// retour la première valeur du tableau (il ne contient qu'une recette)
+        return $appartements[0];// retour la première valeur du tableau (il ne contient qu'un appartement)
     }
 
     /**
-     * retourn la recette la plus récente
+     * retourn l'appartement le plus récent
      *
      * @return array
      */
@@ -214,11 +237,11 @@ class Database {
     }
 
     /**
-     * Retourne la recette avec la meilleure note
+     * Retourne l'appartement avec la meilleure note
      *
      * @return array
      */
-    public function getBestAppartement() // TODO : modifier pour aller chercher le rating pour calculer la note !
+    public function getBestAppartement()
     {
         $querry = 'SELECT * FROM t_appartement ORDER BY appRate DESC LIMIT 1';
 
@@ -245,7 +268,7 @@ class Database {
     }
 
     /**
-     * ajoute une recette a la base de donnée
+     * ajoute un appartement a la base de donnée
      *
      * @param array $appartement
      * @return void
@@ -266,7 +289,7 @@ class Database {
             3 => array(
                 'marker' => ':appCategory',
                 'input' => $appartement["appCategory"],
-                'type' => PDO::PARAM_STR
+                'type' => PDO::PARAM_INT
             ),
             4 => array(
                 'marker' => ':appImage',
@@ -322,24 +345,37 @@ class Database {
     }
 
     /**
-     * permet d'obtenir les recette liées a un utilisateur
+     * permet d'obtenir les appartements liées a un utilisateur
      *
      * @param int $userId
      * @return array
      */
-    public function getAppartementsByUserId($userId)
+    public function getAppartementsByUserId($userId, $selfPage = false)
     {
-        $req = $this->queryPrepareExecute('SELECT * FROM t_appartement WHERE idUser = '. $userId , null);// appeler la méthode pour executer la requète
+        $req = "";
+
+        if (!$selfPage)
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement 
+                                               LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
+                                               WHERE idUser = '. $userId . ' AND appVisibility = 1', null);
+        }
+        else
+        {
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement 
+                                               LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
+                                               WHERE idUser = '. $userId , null);// appeler la méthode pour executer la requète
+        }
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 
         $this->unsetData($req);
 
-        return $appartements;// retour tous les recettes
+        return $appartements;// retour tous les appartements
     }
 
     /**
-     * permet de modifier une recette
+     * permet de modifier un appartement
      *
      * @param array $appartement
      * @return void
@@ -360,7 +396,7 @@ class Database {
             3 => array(
                 'marker' => ':appCategory',
                 'input' => $appartement["appCategory"],
-                'type' => PDO::PARAM_STR
+                'type' => PDO::PARAM_INT
             ),
             4 => array(
                 'marker' => ':appImage',
@@ -392,7 +428,7 @@ class Database {
                 'input' => $appartement["idUser"],
                 'type' => PDO::PARAM_INT
             )
-        );
+        ); // TODO : ajouter $idAppartement dans les matchs
 
         $query =   'UPDATE t_appartement SET 
                     appName = :appName, appDescription = :appDescription, appCategory = :appCategory,
@@ -405,8 +441,30 @@ class Database {
         $this->unsetData($req);
     }
 
+    public function editAppartementVisibility($idAppartement, $visibility)
+    {
+        $values = array(
+            1 => array(
+                'marker' => ':idAppartement',
+                'input' => $idAppartement,
+                'type' => PDO::PARAM_INT
+            ),
+            2 => array(
+                'marker' => ':appVisibility',
+                'input' => $visibility,
+                'type' => PDO::PARAM_INT
+            )
+        );
+
+        $query =  'UPDATE t_appartement SET appVisibility = :appVisibility WHERE idAppartement = :idAppartement';
+
+        $req = $this->queryPrepareExecute($query, $values);
+
+        $this->unsetData($req);
+    }
+
     /**
-     * supprime une recette
+     * supprime un appartement
      *
      * @param int $idappartement
      * @return void
@@ -429,43 +487,43 @@ class Database {
     }
 
     /**
-     * permet d'obtenir toutes les notations d'une recette
+     * permet d'obtenir toutes les notations d'un appartement
      *
      * @param int $idappartement
      * @return array
      */
-    public function getAllRatingsForThisAppartement($idAppartement)
-    {
-        $req = $this->queryPrepareExecute('SELECT * FROM t_rating LEFT JOIN t_user ON t_rating.idUser = t_user.idUser WHERE t_rating.idAppartement = ' . $idAppartement, null);// appeler la méthode pour executer la requète
+    // public function getAllRatingsForThisAppartement($idAppartement)
+    // {
+    //     $req = $this->queryPrepareExecute('SELECT * FROM t_rating LEFT JOIN t_user ON t_rating.idUser = t_user.idUser WHERE t_rating.idAppartement = ' . $idAppartement, null);// appeler la méthode pour executer la requète
 
-        $ratings = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
+    //     $ratings = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 
-        $this->unsetData($req);
+    //     $this->unsetData($req);
 
-        return $ratings;// retour toute les évaluations de la recette
-    }
+    //     return $ratings;// retour toute les évaluations de l'appartement
+    // }
 
     /**
-     * permet de savoir si un utilisateur a déjà noté la recette
+     * permet de savoir si un utilisateur a déjà noté l'appartement
      *
      * @param int $idUser
      * @param int $idAppartement
      * @return bool
      */
-    public function userAlreadyRateThisAppartement($idUser, $idAppartement)
-    {
-        $ratings = $this->getAllRatingsForThisappartement($idAppartement);
+    // public function userAlreadyRateThisAppartement($idUser, $idAppartement)
+    // {
+    //     $ratings = $this->getAllRatingsForThisappartement($idAppartement);
 
-        foreach($ratings as $rating)
-        {
-            if ($rating["idUser"] == $idUser)
-            {
-                return true;
-            }
-        }
+    //     foreach($ratings as $rating)
+    //     {
+    //         if ($rating["idUser"] == $idUser)
+    //         {
+    //             return true;
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
     /**
      * ajoute une évaluation
@@ -526,7 +584,7 @@ class Database {
     }
 
     /**
-     * vérifie si la recette existe
+     * vérifie si l'appartement existe
      *
      * @param int $idUser
      * @param int $idAppartement
@@ -1030,5 +1088,67 @@ class Database {
 
         $this->unsetData($req);
     }
+
+
+
+
+
+
+    //profile section
+
+    public function profileExist($idProfile)
+    {
+        $req = $this->queryPrepareExecute('SELECT * FROM t_profile WHERE idProfile = ' . $idProfile, null);
+
+        $profiles = $this->formatData($req);
+
+        $this->unsetData($req);
+
+        return $profiles[0];
+    }
+
+    public function getAllProfiles()
+    { 
+        $req = $this->queryPrepareExecute('SELECT * FROM t_profile' , null);
+
+        $appartements = $this->formatData($req);
+
+        $this->unsetData($req);
+
+        return $appartements;
+    }
+
+    public function getProfileNameById($idProfile)
+    {
+        $req = $this->queryPrepareExecute('SELECT * FROM t_profile WHERE idProfile = ' . $idProfile, null);
+
+        $profiles = $this->formatData($req);
+
+        $this->unsetData($req);
+
+        return $profiles[0]["proName"];
+    }
+
+
+
+
+
+
+
+
+    // CATEGORY
+    
+    
+    public function getAllCategories()
+    { 
+        $req = $this->queryPrepareExecute('SELECT * FROM t_category' , null);
+
+        $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
+
+        $this->unsetData($req);
+
+        return $appartements;// retour tous les appartements
+    }
+
 }
 ?>

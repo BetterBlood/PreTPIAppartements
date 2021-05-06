@@ -20,6 +20,17 @@
     </div>
 
     <?php
+        if (array_key_exists("isConnected", $_SESSION) && $_SESSION["isConnected"] && isset($modificationDone)) 
+        {
+            if ($modificationDone)
+            {
+                echo '<p class="text-white">modifications efféctuées </p>'; 
+            }
+        }
+        
+    ?>
+
+    <?php
         $imageAppartementLink = '"resources/image/Appartements/' . htmlspecialchars($appartement['appImage']) . '"';
         echo '<img style="width:50%;" src=' . $imageAppartementLink . ' alt="image de profile">';
         
@@ -58,8 +69,32 @@
             <div class="col-md-3 mb-3 pt-n2 pb-n2">
                 <label for="appCategory">Catégorie</label>
                 <?php
-                    echo '<input type="text" class="form-control" name="appCategory" id="appCategory" placeholder="Appartement" value="' . $appartement["appCategory"] . '">';
+                echo '<select id="appCategory" name="appCategory" class="form-control" >';
+                    echo '';
+                    
+                    echo '<option value="-1" ';
+
+                    if (array_key_exists("catName", $categories) && $categories["catName"] == "-1")
+                    {
+                        
+                        echo 'selected';
+                    }
+                    
+                    echo '>aucun</option>';
+
+                    foreach ($categories as $category) 
+                    {
+                        echo '<option value="' . $category["idCategory"] . '"';
+
+                        if ($appartement["appCategory"] == $category["idCategory"])
+                        {
+                            echo 'selected';
+                        }
+                        
+                        echo '>' . $category["catName"] . '</option>';
+                    }
                 ?>
+                </select>
             </div>
 
             <div class="form-row col-md-4 mb-3 pt-n2 pb-n2">

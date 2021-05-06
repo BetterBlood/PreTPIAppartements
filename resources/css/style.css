@@ -1,8 +1,8 @@
 /*
-Auteur: Jeremiah Steiner Arthur Wallef
-Date: 07.09.2020
-Description: 40 P_Web2: La foire aux recettes
-ETML 2020
+Auteur: Jeremiah Steiner
+Date: 30.04.2021
+Description: PreTPI Appartements
+ETML 2021
 */
 
 
@@ -215,24 +215,45 @@ ul.social-buttons li a:active, ul.social-buttons li a:focus, ul.social-buttons l
   }
 }
 
-@media (min-width: 500px) {
+@media (max-width: 992px) {
   .content{
     margin-top:10% !important;
     margin-bottom: 5%;
   }
 
   .mastHead{
-    margin-top: 7vh;
+    margin-top: 8vh;
   }
 }
 
-@media (min-width: 400px) {
+@media (max-width: 500px) {
   .content{
-    margin-top:15% !important;
+    margin-top:10% !important;
+    margin-bottom: 5%;
+  }
+
+  .mastHead{
+    margin-top: 8vh;
+  }
+}
+
+@media (max-width: 408px) {
+  .content{
+    margin-top:13% !important;
     margin-bottom: 5%;
   }
   .mastHead{
-    margin-top: 7vh;
+    margin-top: 16vh;
+  }
+}
+
+@media (max-width: 198px) {
+  .content{
+    margin-top:50% !important;
+    margin-bottom: 5%;
+  }
+  .mastHead{
+    padding-top: 50%;
   }
 }
 

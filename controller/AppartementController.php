@@ -6,10 +6,9 @@ use function PHPSTORM_META\elementType;
  * ETML
  * Auteur : Jeremiah Steiner
  * Date: 27.04.2021
- * Controler pour gérer les recettes
+ * Controler pour gérer les appartements
  */
 
-//include_once 'model/RecetteRepository.php';
 include_once("model/Database.php");
 
 class AppartementController extends Controller {
@@ -96,9 +95,10 @@ class AppartementController extends Controller {
         // Instancie le modèle et va chercher les informations
 
         $database = new Database();
+        
 
         $startIndex = 0;
-        $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre de recette affichée
+        $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre d'appartement affiché
         $_SESSION["appartementsPerPage"] = $lengthAppartement;
 
         if (array_key_exists("start", $_GET) && $_GET["start"] > 0) // si le paramettre de start n'est pas négatif
@@ -120,7 +120,52 @@ class AppartementController extends Controller {
             }
         }
 
-        $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
+        }
+
+        $appartements = $database->getAllAppartements($startIndex, $lengthAppartement, false, $orderBy, $asc);
 
         // Charge le fichier pour la vue
         $view = file_get_contents('view/page/appartement/list.php');
@@ -148,7 +193,7 @@ class AppartementController extends Controller {
         $database = new Database();
 
         $startIndex = 0;
-        $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre de recette affichée
+        $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre d'appartement affiché
         $_SESSION["appartementsPerPage"] = $lengthAppartement;
 
         if (array_key_exists("start", $_GET) && $_GET["start"] > 0) // si le paramettre de start n'est pas négatif
@@ -170,8 +215,53 @@ class AppartementController extends Controller {
             }
         }
 
-        $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
-        $wishAppartements = $database->getAllWishAppartements($startIndex, $lengthAppartement, $_SESSION["idUser"]);
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
+        }
+
+        $appartements = $database->getAllAppartements($startIndex, $lengthAppartement, $orderBy, $asc);
+        $wishAppartements = $database->getAllWishAppartements($startIndex, $lengthAppartement, $_SESSION["idUser"], $orderBy, $asc);
 
         // Charge le fichier pour la vue
         $view = file_get_contents('view/page/appartement/wishlist.php');
@@ -201,6 +291,7 @@ class AppartementController extends Controller {
         $startIndex = 0;
         $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre d'appartements affichés'
         $_SESSION["appartementsPerPage"] = $lengthAppartement;
+        $inWish = false;
 
         if (array_key_exists("start", $_GET) && $_GET["start"] > 0) // si le paramettre de start n'est pas négatif
         {
@@ -214,16 +305,62 @@ class AppartementController extends Controller {
         if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
         {
             $database->insertWish($_SESSION["idUser"], $_GET["id"]);
-        }
-
-        $inWish = false;
-
-        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
-        {
+            error_log("InsertWish, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['wishModification']);
+            
             if ($database->wishExtist($_SESSION["idUser"], $_GET["id"]))
             {
                 $inWish = true;
             }
+            else
+            {
+                $inWish = false;
+                error_log("InsertWish, pseudo : " . htmlspecialchars($_SESSION["username"]) . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['error']);                
+            }
+        }
+
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
         }
 
         $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
@@ -268,6 +405,7 @@ class AppartementController extends Controller {
         if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
         {
             $database->removeWish($_SESSION["idUser"], $_GET["id"]);
+            error_log("RemoveWish, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['wishModification']);
         }
 
         $inWish = false;
@@ -293,6 +431,51 @@ class AppartementController extends Controller {
             $view = file_get_contents('view/page/appartement/list.php');
         }
 
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
+        }
+
 
         // Pour que la vue puisse afficher les bonnes données, il est obligatoire que les variables de la vue puisse contenir les valeurs des données
         // ob_start est une méthode qui stoppe provisoirement le transfert des données (donc aucune donnée n'est envoyée).
@@ -306,7 +489,7 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet d'ajouter ou de modifier sa note pour une recette
+     * permet d'ajouter ou de modifier sa note pour un appartement
      *
      * @return string
      */
@@ -327,11 +510,58 @@ class AppartementController extends Controller {
             $_GET["start"] = 0;
         }
 
-        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
+        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]) && !$database->isRateExist($_SESSION["idUser"], $_GET["id"]))
         {
             $database->insertRating($_SESSION["idUser"], $_GET["id"]);
             $database->updateWish($_SESSION["idUser"], $_GET["id"], $database->GetVisitedStateForWish($_SESSION["idUser"], $_GET["id"]), 1);
             $database->updateAppartementRate($_GET["id"]);
+
+            error_log("RateAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['appModification']);            
+        }
+
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
         }
 
         $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
@@ -353,11 +583,11 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet d'ajouter ou de modifier sa note pour une recette
+     * permet d'ajouter ou de modifier sa note pour un appartement
      *
      * @return string
      */
-    private function unrateAction() { // TODO : ne pas oublié d'update le wishlist et la list d'appartement en calculant le nouveau rating
+    private function unrateAction() {
         // Instancie le modèle et va chercher les informations
         $database = new Database();
 
@@ -374,11 +604,57 @@ class AppartementController extends Controller {
             $_GET["start"] = 0;
         }
 
-        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]))
+        if (array_key_exists("id", $_GET) && $database->AppartementExist($_GET["id"]) && $database->isRateExist($_SESSION["idUser"], $_GET["id"]))
         {
             $database->removeRating($_SESSION["idUser"], $_GET["id"]);
             $database->updateWish($_SESSION["idUser"], $_GET["id"], $database->GetVisitedStateForWish($_SESSION["idUser"], $_GET["id"]), 0);
             $database->updateAppartementRate($_GET["id"]);
+            error_log("UnrateAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['appModification']);            
+        }
+
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
         }
 
         $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
@@ -449,7 +725,7 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet d'ajouter une recette
+     * permet d'ajouter un appartement
      *
      * @return string
      */
@@ -458,12 +734,14 @@ class AppartementController extends Controller {
         
         $formError = false;
 
+        $categories = $database->getAllCategories();
+
         if (isset($_POST["appartementCreation1"])) // vérification de champ
         {
             $_SESSION["appartement"] = array();
             $_SESSION["appartement"]["appName"] = "";
             $_SESSION["appartement"]["appDescription"] = "";
-            $_SESSION["appartement"]["appCategory"] = "";
+            $_SESSION["appartement"]["appCategory"] = -1;
             $_SESSION["appartement"]["appSurface"] = -1;
             $_SESSION["appartement"]["appPrix"] = -1;
             
@@ -476,7 +754,7 @@ class AppartementController extends Controller {
                 $formError = true;
             }
 
-            if (array_key_exists("appCategory", $_POST) && trim($_POST["appCategory"]) != "" && strlen($_POST["appCategory"]) <= 100 && strlen($_POST["appCategory"]) > 4) // 5 charactère minimum
+            if (array_key_exists("appCategory", $_POST) && trim($_POST["appCategory"]) != "" && (int)$_POST["appCategory"] <= sizeof($categories) && (int)$_POST["appCategory"] > 0) // 5 charactère minimum
             {
                 $_SESSION["appartement"]["appCategory"] = $_POST["appCategory"];
             }
@@ -529,15 +807,20 @@ class AppartementController extends Controller {
             $appartement["appImage"] = "defaultAppartementPicture.jpg";
             $appartement["appRate"] = 0;
 
-            $database->insertAppartement($appartement); // insertion de la recette dans la base de donnée
+            $database->insertAppartement($appartement); // insertion de l'appartement dans la base de donnée
+            $appartement = $database->getLastAppartement(); //get l'appartement pour la page edit (où l'on peut ajouter une image)
 
-            $appartement = $database->getLastAppartement(); //get la recette pour la page edit (où l'on peut ajouter une image) 
-
+            error_log("AddAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['appModification']);
             $view = file_get_contents('view/page/restrictedPages/manageAppartement/editAppartement.php');
         }
         else
         {
             $view = file_get_contents('view/page/restrictedPages/manageAppartement/addAppartement.php');
+            
+            if ($formError)
+            {
+                error_log("AddAppartement, idUser : " . $_SESSION["idUser"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['error']);
+            }
         }
         
 
@@ -549,7 +832,7 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet de modifier une recette
+     * permet de modifier un appartement
      *
      * @return string
      */
@@ -557,9 +840,11 @@ class AppartementController extends Controller {
         $database = new Database();
 
         $appartement = $database->getOneAppartement($_GET["id"]);
+        $categories = $database->getAllCategories();
 
         $imageEmpty = false;
         $formError = false;
+        $modificationDone = false;
 
         if (array_key_exists("fileUpdate", $_POST)) // modification de l'image
         {
@@ -595,10 +880,13 @@ class AppartementController extends Controller {
                 $appartement["appImage"] = $imgName;
                 
                 $database->editAppartement($appartement); // modification du nom dans la database
+                $modificationDone = true;
+                error_log("EditAppartement Image, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['appModification']);
             }
             else
             {
                 $imageEmpty = true;
+                error_log("EditAppartement Image, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['error']);
             }
         }
 
@@ -607,7 +895,7 @@ class AppartementController extends Controller {
             $_SESSION["appartement"] = array();
             $_SESSION["appartement"]["appName"] = "";
             $_SESSION["appartement"]["appDescription"] = "";
-            $_SESSION["appartement"]["appCategory"] = "";
+            $_SESSION["appartement"]["appCategory"] = -1;
             $_SESSION["appartement"]["appSurface"] = -1;
             $_SESSION["appartement"]["appPrix"] = -1;
             
@@ -620,7 +908,7 @@ class AppartementController extends Controller {
                 $formError = true;
             }
 
-            if (array_key_exists("appCategory", $_POST) && trim($_POST["appCategory"]) != "" && strlen($_POST["appCategory"]) <= 100 && strlen($_POST["appCategory"]) > 4) // 5 charactère minimum
+            if (array_key_exists("appCategory", $_POST) && trim($_POST["appCategory"]) != "" && (int)$_POST["appCategory"] <= sizeof($categories) && (int)$_POST["appCategory"] > 0) // 5 charactère minimum
             {
                 $_SESSION["appartement"]["appCategory"] = $_POST["appCategory"];
             }
@@ -674,8 +962,13 @@ class AppartementController extends Controller {
                 $appartementTMP["appRate"] = 0;
 
                 $database->editAppartement($appartementTMP); // modification de l'appartement dans la base de donnée
-
+                error_log("editAppartement Données, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['appModification']);
                 $appartement = $database->getOneAppartement($_GET["id"]);
+                $modificationDone = true;
+            }
+            else
+            {
+                error_log("editAppartement Données, idUser : " . $_SESSION["idUser"] . ", appId : " . $appartement["idAppartement"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['error']);
             }
         }
 
@@ -689,7 +982,7 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet de supprimer une recette
+     * permet de supprimer un appartement
      *
      * @return string
      */
@@ -708,6 +1001,7 @@ class AppartementController extends Controller {
             if ($appartement["idUser"] == $_SESSION["idUser"])
             {
                 $database->deleteAppartement($_GET["id"]); // suppression dans la base de donnée
+                error_log("RemoveAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['appModification']);
             }
         }
 
@@ -750,7 +1044,7 @@ class AppartementController extends Controller {
     }
 
     /**
-     * permet de rendre l'index de départ rond par rapport au nombre de page et au nombre de recette par page <etc class=""></etc>
+     * permet de rendre l'index de départ rond par rapport au nombre de page et au nombre d'appartement par page <etc class=""></etc>
      *
      * @param int $startIndex 
      * @param [type] $database
@@ -783,11 +1077,11 @@ class AppartementController extends Controller {
             }
             else if ($_GET["start"] == PHP_INT_MAX)
             {
-                if ($appartementNumber%$lengthAppartement == 0) // s'il y a pil le meme nombre de recette
+                if ($appartementNumber%$lengthAppartement == 0) // s'il y a pil le meme nombre d'appartement
                 {
                     $startIndex = $appartementNumber - ($lengthAppartement - $appartementNumber%$lengthAppartement);
                 }
-                else // s'il y a plus de recette
+                else // s'il y a plus d'appartement
                 {
                     $startIndex = $appartementNumber - $appartementNumber%$lengthAppartement;
                 }

@@ -16,14 +16,14 @@
 	</div>
 </div>
 <div class="row">
-	<table class="table table-striped table-dark">
+	<table class="table table-striped table-dark table-hover">
 	<tr>
-		<th>Nom</th>
-		<th>Catégorie</th>
-		<th>Surface</th>
-		<th>Note</th>
-		<th>Prix</th>
-		<th class="text-center">Auteur</th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=nom&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Nom</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=cat&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Catégorie</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=sur&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Surface</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=not&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Note</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=pri&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Prix</a></th>
+		<th class="text-center"><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=aut&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Auteur</a></th>
 		<th colspan="2" class="text-center">Détail</th>
 	</tr>
 	<?php
@@ -33,25 +33,21 @@
 			$startIndex = $_GET["start"];
 		}
 
-		foreach ($appartements as $appartement) {
+		foreach ($appartements as $appartement) 
+		{
 			$user = $database->getOneUserById($appartement["idUser"]);
 
 			echo '<tr>';
 				echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
-				echo '<td>' . htmlspecialchars($appartement['appCategory']) . '</td>';
+				echo '<td>' . htmlspecialchars($appartement['catName']) . '</td>';
 				echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
-				if (isset($appartement["appRate"])) // TODO : modifier ça
-				{
-					echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
-				}
-				else
-				{
-					echo '<td>pas encore notée</td>';
-				}
+
+				echo '<td>' . htmlspecialchars($appartement['appRate']) . '</td>';
+				
 				echo '<td>' . htmlspecialchars($appartement['appPrix']) . ' CHF</td>';
 				echo '<td class="text-center">' . $user["usePseudo"] . '</td>';
 
-				if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détail d'une recette
+				if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détail d'un appartement
 				{
 					echo '<td><a href="index.php?controller=appartement&action=list&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
 					
@@ -78,26 +74,26 @@
 
 			echo '</tr>';
 
-			if (array_key_exists("id", $_GET) && htmlspecialchars($_GET["id"]) == htmlspecialchars($appartement['idAppartement'])) // les premiers détails de la recette sont divisé en 3 parties
+			if (array_key_exists("id", $_GET) && htmlspecialchars($_GET["id"]) == htmlspecialchars($appartement['idAppartement'])) // les premiers détails de l'appartement sont divisé en 3 parties
 			{
 				echo '<tr>';
 
-					// première partie : concerne la recette elle-même
+					// première partie : concerne l'appartement elle-même
 					$imageLink = '"resources/image/Appartements/' . htmlspecialchars($appartement['appImage']) . '"';
 					echo '<td COLSPAN="4">';
 						echo '<div class="card" style="width: 35rem;">';
-							echo '<img src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de la recette">';
+							echo '<img src=' . $imageLink . ' class="card-img-top d-block w-100" alt="image de profile du créateur de l\'appartement">';
 							echo '<div class="card-body" style="color:black">';
 								echo '<h5 class="card-title">Description :</h5>';
 								echo '<p class="card-text">' . $appartement["appDescription"] . '</p>';
 
 								if (array_key_exists("isConnected", $_SESSION) && $_SESSION["isConnected"])
 								{
-									echo '<a href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '" class="btn btn-primary">Voir la recette</a>';
+									echo '<a href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '" class="btn btn-primary">Voir l\'appartement</a>';
 								}
 								else
 								{
-									echo '<a href="index.php?controller=user&action=loginForm" class="btn btn-primary">Voir la recette</a>';
+									echo '<a href="index.php?controller=user&action=loginForm" class="btn btn-primary">Voir l\'appartement</a>';
 
 								}
 
@@ -106,7 +102,7 @@
 					echo '</td>';
 					//echo htmlspecialchars($appartement['recImage']);
 
-					// seconde partie : les information secondaire de la recette (avec la note la difficultée et le temps de préparation)
+					// seconde partie : les information secondaire de l'appartement (avec la note la difficultée et le temps de préparation)
 					echo '<td COLSPAN="2">';
 						echo '<div class="card" style="width: 18rem;">';
 							echo '<div class="card-body" style="color:black">';
@@ -114,7 +110,7 @@
 
 								if (array_key_exists("isConnected", $_SESSION) && $_SESSION["isConnected"])
 								{
-									echo '<a href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '" class="btn btn-success">Noter la recette</a>' . '</p>';
+									echo '<a href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '" class="btn btn-success">Noter l\'appartement</a>' . '</p>';
 								}
 								else
 								{
@@ -133,11 +129,11 @@
 
 					// troisième partie : contient les premières informations du l'utilisateur
 					$imageProfilLink = '"resources/image/Users/' . htmlspecialchars($user['useImage']) . '"';
-					//echo '<img class="d-block w-50" src=' . $imageProfilLink . ' alt="image de profile du créateur de la recette">';
+					//echo '<img class="d-block w-50" src=' . $imageProfilLink . ' alt="image de profile du créateur de l'appartement">';
 				
 					echo '<td style="width:100px">';
 						echo '<div class="card" style="width: 18rem;">';
-							echo '<img src=' . $imageProfilLink . ' class="card-img-top" alt="image de profile du créateur de la recette">';
+							echo '<img src=' . $imageProfilLink . ' class="card-img-top" alt="image de profile du créateur de l\'appartement">';
 							echo '<div class="card-body" style="color:black">';
 								echo '<h5 class="card-title">' . $user["usePseudo"] . '</h5>';
 								echo '<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card\'s content.</p>';
@@ -188,7 +184,7 @@
 	
 	</table>
 
-	<!-- cette div contient la pagination des recettes-->
+	<!-- cette div contient la pagination des appartements-->
 	<div class="justify-content-right numPage" id="numPage"> 
 		<ul class="pagination justify-content-center">
 			<li class="page-item">
