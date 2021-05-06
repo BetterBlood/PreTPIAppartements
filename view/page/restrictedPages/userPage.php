@@ -7,6 +7,7 @@
 			{
                 echo 'Page de profile de : ' . $userProfile['usePseudo'];
                 $imageProfilLink = '"resources/image/Users/' . htmlspecialchars($userProfile['useImage']) . '"';
+                
 			}
 			else 
 			{

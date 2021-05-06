@@ -37,7 +37,7 @@
 		{
 			$user = $database->getOneUserById($appartement["idUser"]);
 
-			echo '<tr>';
+			echo '<tr id="appList' . $appartement["idAppartement"] . '">';
 				echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
 				echo '<td>' . htmlspecialchars($appartement['catName']) . '</td>';
 				echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
@@ -69,7 +69,7 @@
 				}
 				else 
 				{
-					echo '<td colspan="2"><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=appartement&action=list&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
+					echo '<td colspan="2"><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=appartement&action=list&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '#appList' . $appartement["idAppartement"] . '"><div class="bg-iconLoupe"></div></a></td>';
 				}
 
 			echo '</tr>';
