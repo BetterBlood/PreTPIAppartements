@@ -148,15 +148,24 @@ class Database {
      * @param int $length
      * @return array
      */
-    public function getAllAppartements($start = 0, $length = 5, $selfPage = false)
+    public function getAllAppartements($start = 0, $length = 5, $selfPage = false, $orderBy = "idAppartement", $asc = true)
     { 
+        $order = $asc ? "ASC" : "DESC";
+
         if ($selfPage)
         {
-            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory LIMIT '.  $start . ', ' . $length , null);// appeler la méthode pour executer la requète
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement 
+                                               LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
+                                               ORDER BY t_appartement.' . $orderBy . ' ' . $order . ' 
+                                               LIMIT '.  $start . ', ' . $length , null);// appeler la méthode pour executer la requète
         }
         else
         {
-            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory WHERE t_appartement.appVisibility = 1 LIMIT '.  $start . ', ' . $length , null);
+            $req = $this->queryPrepareExecute('SELECT * FROM t_appartement 
+                                               LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
+                                               WHERE t_appartement.appVisibility = 1 
+                                               ORDER BY t_appartement.' . $orderBy . ' ' . $order .' 
+                                               LIMIT '.  $start . ', ' . $length , null);
         }
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
@@ -173,12 +182,16 @@ class Database {
      * @param int $length
      * @return array
      */
-    public function getAllWishAppartements($start = 0, $length = 5, $idUser)
+    public function getAllWishAppartements($start = 0, $length = 5, $idUser, $orderBy = "idAppartement", $asc = true)
     { 
+        $order = $asc ? "ASC" : "DESC";
+
         $req = $this->queryPrepareExecute('SELECT * FROM t_appartementswishlist 
                                             LEFT JOIN t_appartement ON t_appartement.idAppartement = t_appartementswishlist.idAppartement
                                             LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
-                                            WHERE t_appartementswishlist.idUser = ' . $idUser . ' LIMIT '.  $start . ', ' . $length, null);// appeler la méthode pour executer la requète
+                                            WHERE t_appartementswishlist.idUser = ' . $idUser . ' 
+                                            ORDER BY t_appartement.' . $orderBy . ' ' . $order . '
+                                            LIMIT '.  $start . ', ' . $length, null);// appeler la méthode pour executer la requète
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
 

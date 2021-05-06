@@ -5,16 +5,16 @@
 	
 </div>
 <div class="row">
-	<table class="table table-striped table-dark">
+	<table class="table table-striped table-dark table-hover">
 	<tr>
-		<th>Nom</th>
-		<th>Catégorie</th>
-		<th>Surface</th>
-        <th>Note</th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=nom&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Nom</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=cat&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Catégorie</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=sur&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Surface</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=not&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Note</a></th>
 		<th>Visité</th>
-		<th>Prix</th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=pri&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Prix</a></th>
 		<th>Noté</th>
-		<th class="text-center">Auteur</th>
+		<th class="text-center"><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=aut&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Auteur</a></th>
 		<th colspan="2" class="text-center">Détail</th>
 	</tr>
 	<?php

@@ -95,6 +95,7 @@ class AppartementController extends Controller {
         // Instancie le modèle et va chercher les informations
 
         $database = new Database();
+        
 
         $startIndex = 0;
         $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre d'appartement affiché
@@ -119,7 +120,52 @@ class AppartementController extends Controller {
             }
         }
 
-        $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
+        }
+
+        $appartements = $database->getAllAppartements($startIndex, $lengthAppartement, false, $orderBy, $asc);
 
         // Charge le fichier pour la vue
         $view = file_get_contents('view/page/appartement/list.php');
@@ -169,8 +215,53 @@ class AppartementController extends Controller {
             }
         }
 
-        $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
-        $wishAppartements = $database->getAllWishAppartements($startIndex, $lengthAppartement, $_SESSION["idUser"]);
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
+        }
+
+        $appartements = $database->getAllAppartements($startIndex, $lengthAppartement, $orderBy, $asc);
+        $wishAppartements = $database->getAllWishAppartements($startIndex, $lengthAppartement, $_SESSION["idUser"], $orderBy, $asc);
 
         // Charge le fichier pour la vue
         $view = file_get_contents('view/page/appartement/wishlist.php');
@@ -225,6 +316,51 @@ class AppartementController extends Controller {
                 $inWish = false;
                 error_log("InsertWish, pseudo : " . htmlspecialchars($_SESSION["username"]) . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['error']);                
             }
+        }
+
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
         }
 
         $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
@@ -295,6 +431,51 @@ class AppartementController extends Controller {
             $view = file_get_contents('view/page/appartement/list.php');
         }
 
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
+        }
+
 
         // Pour que la vue puisse afficher les bonnes données, il est obligatoire que les variables de la vue puisse contenir les valeurs des données
         // ob_start est une méthode qui stoppe provisoirement le transfert des données (donc aucune donnée n'est envoyée).
@@ -336,6 +517,51 @@ class AppartementController extends Controller {
             $database->updateAppartementRate($_GET["id"]);
 
             error_log("RateAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['appModification']);            
+        }
+
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
         }
 
         $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
@@ -384,6 +610,51 @@ class AppartementController extends Controller {
             $database->updateWish($_SESSION["idUser"], $_GET["id"], $database->GetVisitedStateForWish($_SESSION["idUser"], $_GET["id"]), 0);
             $database->updateAppartementRate($_GET["id"]);
             error_log("UnrateAppartement, idUser : " . $_SESSION["idUser"] . ", appId : " . $_GET["id"] . " \t\t\t\t[jour-heure] " . $database->getDate()["currentTime"] . "\r", 3, $GLOBALS['MM_CONFIG']['logPath']['appModification']);            
+        }
+
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
         }
 
         $appartements = $database->getAllAppartements($startIndex, $lengthAppartement);
