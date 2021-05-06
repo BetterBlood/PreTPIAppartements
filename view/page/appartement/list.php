@@ -18,12 +18,12 @@
 <div class="row">
 	<table class="table table-striped table-dark table-hover">
 	<tr>
-		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=nom&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Nom</a></th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=cat&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Catégorie</a></th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=sur&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Surface</a></th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=not&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Note</a></th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=pri&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Prix</a></th>
-		<th class="text-center"><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=aut&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Auteur</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=nom&asc=<?php echo '' . $asc ? "false": "true"; ?>">Nom</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=cat&asc=<?php echo '' . $asc ? "false": "true"; ?>">Catégorie</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=sur&asc=<?php echo '' . $asc ? "false": "true"; ?>">Surface</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=not&asc=<?php echo '' . $asc ? "false": "true"; ?>">Note</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=pri&asc=<?php echo '' . $asc ? "false": "true"; ?>">Prix</a></th>
+		<th class="text-center"><a class="text-white" href="index.php?controller=appartement&action=list&orderBy=aut&asc=<?php echo '' . $asc ? "false": "true"; ?>">Auteur</a></th>
 		<th colspan="2" class="text-center">Détail</th>
 	</tr>
 	<?php
@@ -37,7 +37,7 @@
 		{
 			$user = $database->getOneUserById($appartement["idUser"]);
 
-			echo '<tr>';
+			echo '<tr id="appList' . $appartement["idAppartement"] . '">';
 				echo '<td><a class="text-white" href="index.php?controller=appartement&action=detail&id=' . htmlspecialchars($appartement['idAppartement']) . '">' . htmlspecialchars($appartement['appName']) . '</a></td>';
 				echo '<td>' . htmlspecialchars($appartement['catName']) . '</td>';
 				echo '<td>' . htmlspecialchars($appartement['appSurface']) . ' m<sup>2</sup></td>';
@@ -49,7 +49,7 @@
 
 				if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détail d'un appartement
 				{
-					echo '<td><a href="index.php?controller=appartement&action=list&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
+					echo '<td><a data-toggle="tooltip" data-placement="top" title="Moins" href="index.php?controller=appartement&action=list&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
 					
 					if (array_key_exists("idUser", $_SESSION)) // possibilité d'ajouter à la liste d'appartement perso
 					{
@@ -69,7 +69,7 @@
 				}
 				else 
 				{
-					echo '<td colspan="2"><a href="index.php?controller=appartement&action=list&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
+					echo '<td colspan="2"><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=appartement&action=list&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '#appList' . $appartement["idAppartement"] . '"><div class="bg-iconLoupe"></div></a></td>';
 				}
 
 			echo '</tr>';

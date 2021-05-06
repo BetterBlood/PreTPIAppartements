@@ -7,6 +7,7 @@
 			{
                 echo 'Page de profile de : ' . $userProfile['usePseudo'];
                 $imageProfilLink = '"resources/image/Users/' . htmlspecialchars($userProfile['useImage']) . '"';
+                
 			}
 			else 
 			{
@@ -276,13 +277,13 @@
     <div class="row">
         <table class="table table-striped table-dark table-hover">
         <tr>
-            <th>nom</th> 
-            <th>catégorie</th>
-		    <th>Surface</th>
-            <th>Note</th>
-            <th>Prix</th>
-            <th class="text-center">auteur</th>
-            <th colspan="4" class="text-center">détail</th>
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=nom&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Nom</a></th> 
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=cat&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Catégorie</a></th>
+		    <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=sur&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Surface</a></th>
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=not&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Note</a></th>
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=pri&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Prix</a></th>
+            <th class="text-center">Auteur</th>
+            <th colspan="4" class="text-center">Détail</th>
         </tr>
         <?php
         // pour le tableau : "table table-striped"
@@ -311,7 +312,7 @@
 
                     if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détails d'un appartement
                     {
-                        echo '<td class="icon-column"><a href="index.php?controller=user&action=profile&idUser=' . $appartement["idUser"] . '&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
+                        echo '<td class="icon-column"><a data-toggle="tooltip" data-placement="top" title="Moins" href="index.php?controller=user&action=profile&idUser=' . $appartement["idUser"] . '&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
                         echo '<td class="icon-column">';
                         if (isset($selfPage) && $selfPage)
                         {
@@ -342,7 +343,7 @@
                     }
                     else 
                     {
-                        echo '<td class="icon-column"><a href="index.php?controller=user&action=profile&idUser=' . $appartement["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
+                        echo '<td class="icon-column"><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=user&action=profile&idUser=' . $appartement["idUser"] . '&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
                         echo '<td class="icon-column">';
                         if (isset($selfPage) && $selfPage)
                         {

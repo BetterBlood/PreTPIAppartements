@@ -7,14 +7,14 @@
 <div class="row">
 	<table class="table table-striped table-dark table-hover">
 	<tr>
-		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=nom&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Nom</a></th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=cat&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Catégorie</a></th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=sur&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Surface</a></th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=not&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Note</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=nom&asc=<?php echo '' . $asc ? "false": "true"; ?>">Nom</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=cat&asc=<?php echo '' . $asc ? "false": "true"; ?>">Catégorie</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=sur&asc=<?php echo '' . $asc ? "false": "true"; ?>">Surface</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=not&asc=<?php echo '' . $asc ? "false": "true"; ?>">Note</a></th>
 		<th>Visité</th>
-		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=pri&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Prix</a></th>
+		<th><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=pri&asc=<?php echo '' . $asc ? "false": "true"; ?>">Prix</a></th>
 		<th>Noté</th>
-		<th class="text-center"><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=aut&asc=<?php if($asc) {echo "false";} else {echo "true";} ?>">Auteur</a></th>
+		<th class="text-center"><a class="text-white" href="index.php?controller=appartement&action=wishlist&orderBy=aut&asc=<?php echo '' . $asc ? "false": "true"; ?>">Auteur</a></th>
 		<th colspan="2" class="text-center">Détail</th>
 	</tr>
 	<?php
@@ -57,12 +57,12 @@
 
 				if (array_key_exists("id", $_GET) && $_GET["id"] == $appartement["idAppartement"]) // affiche/masque les détail d'un appartement
 				{
-					echo '<td><a href="index.php?controller=appartement&action=wishlist&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
+					echo '<td><a data-toggle="tooltip" data-placement="top" title="Moins" href="index.php?controller=appartement&action=wishlist&start=' . $startIndex . '"><div class="bg-iconLoupe-reverse"></div></a></td>';
                     echo '<td><a onclick="return confirm(\'Voulez-vous vraiment retirer cet appartement de votre liste personnelle ?\')" href="index.php?controller=appartement&action=removeWish&page=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '"><img src="resources/image/icone/removeHouse.png" alt="remove house icon"></a></td>';
 				}
 				else 
 				{
-					echo '<td><a href="index.php?controller=appartement&action=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
+					echo '<td><a data-toggle="tooltip" data-placement="top" title="Plus" href="index.php?controller=appartement&action=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '&start=' . $startIndex . '"><div class="bg-iconLoupe"></div></a></td>';
                     echo '<td><a onclick="return confirm(\'Voulez-vous vraiment retirer cet appartement de votre liste personnelle ?\')" href="index.php?controller=appartement&action=removeWish&page=wishlist&id=' . htmlspecialchars($appartement['idAppartement']) . '"><img src="resources/image/icone/removeHouse.png" alt="remove house icon"></a></td>';					
 				}
 
@@ -125,7 +125,7 @@
 					$imageProfilLink = '"resources/image/Users/' . htmlspecialchars($user['useImage']) . '"';
 					//echo '<img class="d-block w-50" src=' . $imageProfilLink . ' alt="image de profile du créateur de l'appartement">';
 				
-					echo '<td COLSPAN="2" style="width:100px">';
+					echo '<td COLSPAN="3" style="width:100px">';
 						echo '<div class="card" style="width: 18rem;">';
 							echo '<img src=' . $imageProfilLink . ' class="card-img-top" alt="image de profile du créateur de l\'appartement">';
 							echo '<div class="card-body" style="color:black">';
