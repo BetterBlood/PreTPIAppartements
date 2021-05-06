@@ -350,21 +350,25 @@ class Database {
      * @param int $userId
      * @return array
      */
-    public function getAppartementsByUserId($userId, $selfPage = false)
+    public function getAppartementsByUserId($userId, $selfPage = false, $orderBy = "idAppartement", $asc = true)
     {
+        $order = $asc ? "ASC" : "DESC";
+
         $req = "";
 
         if (!$selfPage)
         {
             $req = $this->queryPrepareExecute('SELECT * FROM t_appartement 
                                                LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
-                                               WHERE idUser = '. $userId . ' AND appVisibility = 1', null);
+                                               WHERE idUser = '. $userId . ' AND appVisibility = 1
+                                               ORDER BY t_appartement.' . $orderBy . ' ' . $order, null);
         }
         else
         {
             $req = $this->queryPrepareExecute('SELECT * FROM t_appartement 
                                                LEFT JOIN t_category ON t_appartement.appCategory = t_category.idCategory 
-                                               WHERE idUser = '. $userId , null);// appeler la méthode pour executer la requète
+                                               WHERE idUser = '. $userId . '
+                                               ORDER BY t_appartement.' . $orderBy . ' ' . $order, null);// appeler la méthode pour executer la requète
         }
 
         $appartements = $this->formatData($req);// appeler la méthode pour avoir le résultat sous forme de tableau
