@@ -97,11 +97,11 @@ class AppartementController extends Controller {
         // Instancie le modèle et va chercher les informations
 
         $database = new Database();
-        $_SESSION["appartementsNumber"] = $database->CountVisibleAppartements();
-
+        
         $startIndex = 0;
         $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre d'appartement affiché
         $_SESSION["appartementsPerPage"] = $lengthAppartement;
+        $_SESSION["appartementsNumber"] = $database->CountVisibleAppartements();
 
         $nbrPages = 0;
 
@@ -200,6 +200,7 @@ class AppartementController extends Controller {
         $startIndex = 0;
         $lengthAppartement = 5; // UTIL : modifier si on veut pouvoir modifier le nombre d'appartement affiché
         $_SESSION["appartementsPerPage"] = $lengthAppartement;
+        $_SESSION["appartementsNumber"] = $database->CountVisibleAppartements();
 
         if (array_key_exists("start", $_GET) && $_GET["start"] > 0) // si le paramettre de start n'est pas négatif
         {
