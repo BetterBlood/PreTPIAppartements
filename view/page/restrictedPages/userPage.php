@@ -276,11 +276,11 @@
     <div class="row">
         <table class="table table-striped table-dark table-hover">
         <tr>
-            <th>Nom</th> 
-            <th>Catégorie</th>
-		    <th>Surface</th>
-            <th>Note</th>
-            <th>Prix</th>
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=nom&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Nom</a></th> 
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=cat&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Catégorie</a></th>
+		    <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=sur&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Surface</a></th>
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=not&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Note</a></th>
+            <th><a class="text-white" href="index.php?controller=user&action=profile&orderBy=pri&idUser=<?php echo $userProfile["idUser"] . "&asc=" . ($asc ? "false" : "true")?>">Prix</a></th>
             <th class="text-center">Auteur</th>
             <th colspan="4" class="text-center">Détail</th>
         </tr>

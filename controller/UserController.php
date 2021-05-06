@@ -261,11 +261,57 @@ class UserController extends Controller
         $view = "";
         $selfPage = false;
         $modificationDone = false;
-
+        
         // errors
         $passwordModifFailed = false;
         $imageEmpty = false;
         $errorPngFile = true;
+
+        // tri
+        $orderBy = "idAppartement";
+        if (array_key_exists("orderBy", $_GET))
+        {
+            switch ($_GET["orderBy"])
+            {
+                case "id":
+                    $orderBy = "idAppartement";
+                    break;
+                
+                case "nom":
+                    $orderBy = "appName";
+                    break;
+
+                case "cat":
+                    $orderBy = "appCategory";
+                    break;
+
+                case "sur":
+                    $orderBy = "appSurface";
+                    break;
+
+                case "not":
+                    $orderBy = "appRate";
+                    break;
+
+                case "pri":
+                    $orderBy = "appPrix";
+                    break;
+
+                case "aut":
+                    $orderBy = "idUser";
+                    break;
+
+                default:
+                    $orderBy = "idAppartement";
+                    break;
+            }
+        }
+    
+        $asc = true;
+        if (array_key_exists("asc", $_GET) && $_GET["asc"] == "false")
+        {
+            $asc = false;
+        }
 
         if (array_key_exists("idUser", $_GET) && $database->userExist(htmlspecialchars($_GET["idUser"])))
         {
@@ -277,7 +323,7 @@ class UserController extends Controller
             if (array_key_exists("idUser", $_SESSION) && $_SESSION["idUser"] == $_GET["idUser"])
             {
                 $selfPage = true;
-                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage);
+                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage, $orderBy, $asc);
 
                 if (isset($_POST) && !empty($_POST))
                 {
@@ -479,14 +525,14 @@ class UserController extends Controller
             }
             else
             {
-                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage);
+                $appartements = $database->getAppartementsByUserId(htmlspecialchars($_GET["idUser"]), $selfPage, $orderBy, $asc);
             }
         }
         else if (array_key_exists("idUser", $_SESSION))
         {
             $errorPngFile = false;
 
-            $appartements = $database->getAppartementsByUserId($_SESSION["idUser"]);
+            $appartements = $database->getAppartementsByUserId($_SESSION["idUser"], false, $orderBy, $asc);
             $userProfile = $database->getOneUserById($_SESSION["idUser"]);
             $view = file_get_contents('view/page/restrictedPages/userPage.php');
             $selfPage = false;
